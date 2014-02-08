@@ -6,6 +6,7 @@
  * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
+namespace Application;
 
 return array(
     'router' => array(
@@ -15,7 +16,7 @@ return array(
                 'options' => array(
                     'route'    => '/',
                     'defaults' => array(
-                        'controller' => 'Application\Controller\Index',
+                        'controller' => 'Application\Controller\Inventory',
                         'action'     => 'index',
                     ),
                 ),
@@ -30,7 +31,7 @@ return array(
                     'route'    => '/application',
                     'defaults' => array(
                         '__NAMESPACE__' => 'Application\Controller',
-                        'controller'    => 'Index',
+                        'controller'    => 'Inventory',
                         'action'        => 'index',
                     ),
                 ),
@@ -39,10 +40,11 @@ return array(
                     'default' => array(
                         'type'    => 'Segment',
                         'options' => array(
-                            'route'    => '/[:controller[/:action]]',
+                            'route'    => '/[:controller[/:action[/:id]]]',
                             'constraints' => array(
                                 'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
                                 'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
+                                
                             ),
                             'defaults' => array(
                             ),
@@ -73,7 +75,9 @@ return array(
     ),
     'controllers' => array(
         'invokables' => array(
-            'Application\Controller\Index' => 'Application\Controller\IndexController'
+            'Application\Controller\Index' => 'Application\Controller\IndexController',
+            'Application\Controller\Inventory' => 'Application\Controller\InventoryController',
+            
         ),
     ),
     'view_manager' => array(
@@ -98,5 +102,35 @@ return array(
             'routes' => array(
             ),
         ),
+    ),
+    'doctrine' => array(
+
+    
+        // 2) standard configuration for the ORM from https://github.com/doctrine/DoctrineORMModule
+        // http://www.jasongrimes.org/2012/01/using-doctrine-2-in-zend-framework-2/
+        // ONLY THIS IS REQUIRED IF YOU USE Doctrine in the module
+        'driver' => array(
+            // defines an annotation driver with two paths, and names it `my_annotation_driver`
+//            'my_annotation_driver' => array(
+            'Application_driver' => array(
+                'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
+                'cache' => 'array',
+                'paths' => array(
+                    // __DIR__ . '/../module/CsnUser/src/CsnUser/Entity' // 'path/to/my/entities',
+                    __DIR__ . '/../src/Application/Entity',
+                ),
+            ),
+
+            // default metadata driver, aggregates all other drivers into a single one.
+            // Override `orm_default` only if you know what you're doing
+            'orm_default' => array(
+                'drivers' => array(
+                    // register `my_annotation_driver` for any entity under namespace `My\Namespace`
+                    // 'My\Namespace' => 'my_annotation_driver'
+                    // 'CsnUser' => 'my_annotation_driver'
+                    'Application\Entity' => 'Application_driver',
+                )
+            )
+        )
     ),
 );

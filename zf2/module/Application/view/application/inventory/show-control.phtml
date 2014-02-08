@@ -1,0 +1,42 @@
+<h3>Customer Inventory</h3>
+	<a href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'addTransaction','id'=>$this->control->getId()))?>">Add  New Control</a>
+
+
+<div>
+ <label >Control Number</label><span class="clr" ><?= $this->control->getId()?></span><br/>
+ <label >Control Name</label><span class="clr" ><?=$this->control->getProductName()?></span><br/>
+ <label >Querntine </label><span class="clr" ><?=$this->control->getQuarntine()?></span><br/>
+ <label >Released </label><span class="clr" ><?=$this->control->getReleased()?></span><br/>
+ <label >Rejected </label><span class="clr" ><?=$this->control->getRejected()?></span><br/>
+ 
+ 
+</div>
+
+
+<table>
+
+<tr>
+	<td> In </td>
+	<td> Out </td>
+	<td> description </td>
+	<td> recipt No </td>
+	<td> by  </td>
+	<td> date </td>
+
+</tr>
+
+
+ 
+<?php foreach($this->control->getControlTransactionsList() as $trans){?>
+<tr>
+	
+	<td> <?=$trans->getIn()?> </td>
+	<td> <?=$trans->getOut()?> </td>
+	<td> <?=$trans->getDescription()?> </td>
+	<td> <?=$trans->getReceiptNo()?> </td>
+	<td> - </td>
+	<td> <?=$trans->getDateCreated()->format('d/m/Y');?> </td>
+	
+</tr>
+<?php } ?>
+</table>

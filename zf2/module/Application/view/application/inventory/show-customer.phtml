@@ -1,0 +1,41 @@
+<h3>Customer Inventory</h3>
+	<a href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'addControl','id'=>$this->customer->getId()))?>">Add  New Control</a>
+
+
+<div>
+ <label >Customer Id</label><span class="clr" ><?= $this->customer->getId()?></span><br/>
+ <label >Customer Name</label><span class="clr" ><?=$this->customer->getName()?></span><br/>
+ <label >Code</label><span class="clr" ><?=$this->customer->getCode()?></span><br/>
+ 
+</div>
+
+
+<table>
+
+<tr>
+	<td> control number </td>
+	<td> Product Name </td>
+	<td> Product Type </td>
+	<td> Initial Ammount </td>
+	<td> Qurantine </td>
+	<td> Released </td>
+	<td> Rejected 	</td>
+</tr>
+
+
+ 
+<?php foreach($this->customer->getControlsList() as $control){?>
+<tr>
+	
+	<td> <?=$control->getControlNumber()?> </td>
+	<td> <?=$control->getProductName()?> </td>
+	<td> <?=$control->getProductType()->getName()?> </td>
+	<td>  <?=$control->getInitialAmmount()?> </td>
+	<td> - </td>
+	<td> - </td>
+	<td> - </td>
+	<td> <a href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'showControl','id'=>$control->getId()))?>"> show Details </a> </td>
+
+</tr>
+<?php } ?>
+</table>

@@ -1,0 +1,28 @@
+<h3>Customers</h3>
+
+
+<table>
+
+<th>
+<td> Customer Id</td>
+<td> Customer Name</td>
+<td> Code</td>
+<td> Customer Address</td>
+
+</th>
+<?php foreach($this->customers as $customer){?>
+<tr>
+	
+<td> <?=$customer->getId()?> </td>
+<td> <?=$customer->getName()?>
+	 
+</td>
+<td> <?=$customer->getCode()?></td>
+<td> <?=$customer->getAddress()?></td>
+<td>
+	
+	<a href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'showCustomer','id'=>$customer->getId()))?>">Show Details</a>
+</td>
+</tr>
+<?php } ?>
+</table>

@@ -46,7 +46,7 @@ $settings = array(
      * Default value: true
      * Accepted values: true/false
      */
-    'nav_menu' => true,
+    'nav_menu' => false,
  
  /**
  * You do not need to edit below this line

@@ -11,7 +11,7 @@ return array(
         'DoctrineModule',
         'DoctrineORMModule',
         'CsnUser',
-        'Stock'
+         
         ),
     'module_listener_options' => array(
         'module_paths' => array(

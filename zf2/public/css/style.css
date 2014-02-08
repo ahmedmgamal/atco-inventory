@@ -35,3 +35,194 @@ div.container a.brand {
     margin-left: 0;
     padding: 8px 20px 12px 40px;
 }
+form input {
+    display: block;
+}
+
+table {
+	font: normal 75%/150% Verdana, Arial, Helvetica, sans-serif;
+	border-collapse: collapse;
+	border: 3px solid #f0f8ff;
+	border-top: 5px double #87CEFA;
+	border-bottom: 5px double #87CEFA;
+}
+th {
+	font: bold 1.1em/120% Verdana, Arial, Helvetica, sans-serif;
+	padding: 5px 10px;
+	font-variant: small-caps;
+	color: #047;
+	font-weight: bold;
+	text-align: left;
+	letter-spacing: -1px;
+}
+thead th {
+	border: 1px solid #87CEFA;
+	white-space: nowrap;
+	background: #F0F8FF;
+}
+tbody td ,tbody th {
+	padding: 5px 10px;
+	background: #fff;
+	color: #000;
+}
+tbody th {
+	color: #047;
+	font-weight: normal;
+	font-variant: normal;
+	font-size: 1em;
+}
+tbody tr.odd {
+	border: 1px solid #87CEFA;
+}
+tbody tr.odd td, tbody tr.odd th {
+	background: #F0F8FF;
+}
+tfoot td, tfoot th {
+	border: none;
+	padding-top: 10px;
+}
+caption {
+	font-family: "Georgia", serif;
+	letter-spacing: 5px;
+	font-style: italic;
+	text-align: left;
+	text-indent: 2em;
+	text-transform: uppercase;
+	font-size: 150%;
+	padding: 10px 0;
+	color: #047;
+}
+table a:link {
+	color: #DC143C;
+}
+table th a:link {
+	color: #047;
+	text-decoration: none;
+}
+table a:visited{
+	color: #036;
+	text-decoration: line-through;
+}
+table a:hover{
+	color: #000;
+	text-decoration:none;
+}
+table a:active{
+	color: #000;
+}
+
+
+
+
+
+
+
+
+	
+/* ----------------------------------------------  Reset form elements ---------------------------------------------- */
+	
+	input, select, textarea {
+		margin:0; padding:0; font-size:0.85em; outline:none;
+		font-family:inherit;	
+		-moz-box-sizing:border-box; /* Firefox */
+		-webkit-box-sizing:border-box; /* Safari */
+		box-sizing:border-box;}
+
+/* ----------------------------------------------  Inputs, textareas and selects  ---------------------------------------------- */
+
+
+	input[type="text"], textarea, select, div.styled, input[type="file"] {  
+		width:12em; border-radius:2px; border: solid 1px #ccc; padding:0.4em;}
+	
+	div.styled, select, input[type="submit"], input[type="button"], 
+	input[type="file"]:after {
+		background: white url(formelements-select.png) no-repeat center right;
+		-webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.2); 
+		box-shadow: 0 1px 3px rgba(0,0,0,0.2);}	
+	
+	input[type="text"], textarea, input[type="file"] { 
+		background-color: #f5f5f5;
+		-webkit-box-shadow: inset 0 2px 3px rgba(0,0,0,0.2);
+		box-shadow: inset 0 2px 3px rgba(0,0,0,0.2);}
+	
+		.ie9 input[type="text"] { line-height:normal; } /* Get the stuff to line up right */
+	
+	textarea { width:100%; height:10em; }
+
+/* ----------------------------------------------  File field  ----------------------------------------------  */
+
+	/* Webkit Only */
+	
+	input[type="file"] { 
+		position: relative; 
+		-webkit-appearance: none;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;	width: 40%;	padding:0;}
+		
+	input[type=file]::-webkit-file-upload-button {
+		width: 0; padding: 0; margin: 0;-webkit-appearance: none; border: none;}	
+		
+	input[type="file"]:after {
+		content: 'Upload File';
+		margin:0 0 0 0.5em;
+		display: inline-block; left: 100%; position: relative;
+		background:white url(formelements-select.png) no-repeat center left;
+		padding:0.3em 0.5em; border: solid 1px #ccc !important;
+		-webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.2); 
+		box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+		border-radius:4px;}	
+		
+		
+		input[type="file"]:active:after {box-shadow:none;}
+	
+	
+/* ----------------------------------------------  Checkboxes and Radio inputs  ----------------------------------------------  */	
+		
+	input[type="radio"], 
+	input[type="checkbox"] { position: absolute; left: -999em; }
+		
+	label:before { 
+		display: inline-block; position: relative; top:0.25em; left:-2px; 
+		content:''; width:25px; height:25px;
+		background-image:url(formelements.png); }
+	
+	input[type="checkbox"] + label:before { background-position: 0 -25px;}
+	input[type="checkbox"]:checked + label:before {background-position: 0 0 ; }
+		 
+	input[type="radio"] + label:before { background-position: -25px -25px;}	 	
+	input[type="radio"]:checked + label:before { background-position: -25px 0;}
+	
+		/* Remove the custom styling for IE 7-8 */
+		
+		.ie8 label:before { display:none; content:none; }
+		
+		.ie8 input[type="checkbox"],
+		.ie8 input[type="radio"],
+		.ie7 input[type="checkbox"],
+		.ie7 input[type="radio"]{ 
+			position: static; left:0; }
+		
+		.ie8 input[type="checkbox"],
+		.ie8 input[type="radio"] { 
+			position:relative; top:5px; margin-right:0.5em;}	
+			
+	input[type="text"]:focus, textarea:focus {
+		border-color:#000;
+		}
+
+/* ---------------------------------------------- Form Submit and Next buttons ---------------------------------------------- */	
+
+	input[type="submit"], 
+	input[type="button"] { 
+		padding:0.5em 1em; line-height:1em; cursor:pointer;
+		border-radius:4px; color:#000; font-weight:bold; font-size:inherit;
+		border:solid 1px #ccc;	box-shadow:0 1px 5px rgba(0,0,0,0.2);
+		background-position: center bottom;}
+		
+		/* Gradient Generator by : http://www.colorzilla.com/gradient-editor/ */
+		
+	input[type="submit"]:active, 
+	input[type="button"]:active {-webkit-box-shadow: none; box-shadow:none;}
+		
+		/* IE7 needs you to change the background to transparent when using image background for submit buttons */	
+
