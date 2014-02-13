@@ -62,16 +62,16 @@ return array(
 				), 
 				'CsnUser\Controller\Registration' => array(
 					'index'	=> 'guest',
-					'changePassword' => 'member',
-					'editProfile' => 'member',
-					'changeEmail' => 'member',
+					'changePassword' => 'viewmember',
+					'editProfile' => 'viewmember',
+					'changeEmail' => 'viewmember',
 					'forgottenPassword' => 'guest',
 					'confirmEmail' => 'guest',
 					'registrationSuccess' => 'guest',
 				),
 				'CsnUser\Controller\Index' => array(
 					'login'   => 'guest',
-					'logout'  => 'member',
+					'logout'  => 'viewmember',
 					'index' => 'guest',
 				),
 				'CsnCms\Controller\Index' => array(
