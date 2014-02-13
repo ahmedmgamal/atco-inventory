@@ -8,14 +8,24 @@
 	<?}?>
 
 
-<div>
- <label >Control Number</label><span class="clr" ><?= $this->control->getId()?></span><br/>
- <label >Control Name</label><span class="clr" ><?=$this->control->getProductName()?></span><br/>
- <label >Querntine </label><span class="clr" ><?=$this->control->getQuarntine()?></span><br/>
- <label >Released </label><span class="clr" ><?=$this->control->getReleased()?></span><br/>
- <label >Rejected </label><span class="clr" ><?=$this->control->getRejected()?></span><br/>
+<div class="control">
+ <label >Control Number:</label> <span class="clr" ><?= $this->control->getControlNumber()?></span><br/>
+ <label >Product Code:</label> <span class="clr" ><?=$this->control->getCode()?></span>
+ <label >Control Name:</label> <span class="clr" ><?=$this->control->getProductName()?></span>
+ <br/>
+	 
+ <label >Batch No. :</label> <span class="clr" ><?=$this->control->getBatchNo()?></span> 
+ <label >Exp.date :</label> <span class="clr" ><?=$this->control->getExpiryDate()->format('dd/mm/yyyy')?></span> 
+ <label >Supplier/date :</label> <span class="clr" ><?=$this->control->getSupplier()?></span>
+ <label >Unit :</label> <span class="clr" ><?=$this->control->getUnit()->getUnit()?></span>
  
+ <br/>
  
+ <label >Querntine :</label> <span class="clr" ><?=$this->control->getQuarntine()?></span> 
+ <label >Released :</label> <span class="clr" ><?=$this->control->getReleased()?></span> 
+ <label >Rejected :</label> <span class="clr" ><?=$this->control->getRejected()?></span><br/>
+
+
 </div>
 
 
