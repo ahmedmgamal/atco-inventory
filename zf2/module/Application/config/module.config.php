@@ -67,6 +67,24 @@ return array(
             ),
         ),
     ),
+    'console' => array(
+		'router' => array(
+			'routes' => array(
+				'cronroute' => array(
+					'options' => array(
+						'route'    => 'sendtransactions',
+						'defaults' => array(
+								'__NAMESPACE__' => 'Application\Controller',
+								'controller'    => 'Inventory',
+								'action'        => 'sendDailyTransactionsReport',
+                        
+							
+						)
+					)
+				)
+			)
+		)
+	),
     'service_manager' => array(
         'abstract_factories' => array(
             'Zend\Cache\Service\StorageCacheAbstractServiceFactory',
@@ -109,13 +127,7 @@ return array(
             __DIR__ . '/../view',
         ),
     ),
-    // Placeholder for console routes
-    'console' => array(
-        'router' => array(
-            'routes' => array(
-            ),
-        ),
-    ),
+
     'doctrine' => array(
 
     

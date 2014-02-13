@@ -11,8 +11,10 @@ namespace Application;
 
 use Zend\Mvc\ModuleRouteListener;
 use Zend\Mvc\MvcEvent;
+use Zend\ModuleManager\Feature\ConsoleBannerProviderInterface;
+use Zend\Console\Adapter\AdapterInterface as Console;
 
-class Module
+class Module implements ConsoleBannerProviderInterface
 {
     public function onBootstrap(MvcEvent $e)
     {
@@ -35,5 +37,16 @@ class Module
                 ),
             ),
         );
+    }
+       /**
+     * This method is defined in ConsoleBannerProviderInterface
+     */
+    public function getConsoleBanner(Console $console){
+        return
+            "==------------------------------------------------------==\n" .
+            "        Welcome to my ZF2 Console-enabled app             \n" .
+            "==------------------------------------------------------==\n" .
+            "Version 0.0.1\n"
+        ;
     }
 }

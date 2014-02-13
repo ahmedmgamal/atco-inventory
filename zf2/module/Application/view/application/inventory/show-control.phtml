@@ -15,7 +15,7 @@
  <br/>
 	 
  <label >Batch No. :</label> <span class="clr" ><?=$this->control->getBatchNo()?></span> 
- <label >Exp.date :</label> <span class="clr" ><?=$this->control->getExpiryDate()->format('dd/mm/yyyy')?></span> 
+ <label >Exp.date :</label> <span class="clr" ><?=$this->control->getExpiryDate()->format('d/m/y')?></span> 
  <label >Supplier/date :</label> <span class="clr" ><?=$this->control->getSupplier()?></span>
  <label >Unit :</label> <span class="clr" ><?=$this->control->getUnit()->getUnit()?></span>
  
@@ -26,7 +26,7 @@
  <label >Rejected :</label> <span class="clr" ><?=$this->control->getRejected()?></span><br/>
 
  <label >Created By  :</label> <span class="clr" ><?=$this->control->getUser()->getUsername()?></span> 
- <label >Date Created  :</label> <span class="clr" ><?=$this->control->getDateCreated()->format('dd/mm/yyyy')?></span> 
+ <label >Date Created  :</label> <span class="clr" ><?=$this->control->getDateCreated()->format('d/m/y')?></span> 
  
 
 

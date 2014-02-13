@@ -14,6 +14,13 @@ use Zend\View\Model\ViewModel;
 use Application\Form\AddControlForm;
 use Application\Entity\Control;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Zend\Mail\Message;
+
+use Zend\Mime\Message as MimeMessage;
+use Zend\Mime\Part as MimePart;
+
+
+
 class InventoryController extends AbstractActionController
 {
     public function indexAction()
@@ -124,7 +131,11 @@ class InventoryController extends AbstractActionController
 					$newControl->setQuarntine($newControl->getInitialAmmount());
 
 					$newControl->setUser($this->identity());
+					$newControl->setDateCreated(new \DateTime());
+					
 					$em->persist($newControl);
+					$em->flush(); 
+
 					$newControlTransactions = new \Application\Entity\ControlTransactions();
 					$newControlTransactions->setIn($newControl->getInitialAmmount());
 					$newControlTransactions->setbalance($newControl->getInitialAmmount());
@@ -132,6 +143,8 @@ class InventoryController extends AbstractActionController
 					$newControlTransactions->setDescription('initial input ');
 					$newControlTransactions->setcontrol($newControl);
 					$newControlTransactions->setUser($this->identity());
+					$newControl->setDateCreated(new \DateTime());
+
 					$em->persist($newControlTransactions);
 
 					$em->flush();
@@ -239,8 +252,88 @@ public function addInTransactionAction()
 		$query->setParameter('date', new \DateTime('today'));
 		
 		$transactions =  $query->getResult();
-		echo count($transactions);
-		$table =  "<table> ";
+		
+		
+		$style ='<style>table {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    border-collapse: collapse;
+    border-color: #87CEFA #F0F8FF;
+    border-image: none;
+    border-left: 3px solid #F0F8FF;
+    border-right: 3px solid #F0F8FF;
+    border-style: double solid;
+    border-width: 5px 3px;
+    font: 75%/150% Verdana,Arial,Helvetica,sans-serif;
+}
+th {
+    color: #004477;
+    font: small-caps bold 1.1em/120% Verdana,Arial,Helvetica,sans-serif;
+    letter-spacing: -1px;
+    padding: 5px 10px;
+    text-align: left;
+}
+thead th {
+    background: none repeat scroll 0 0 #F0F8FF;
+    border: 1px solid #87CEFA;
+    white-space: nowrap;
+}
+tbody td, tbody th {
+    background: none repeat scroll 0 0 #FFFFFF;
+    color: #000000;
+    padding: 5px 10px;
+}
+tbody th {
+    color: #004477;
+    font-size: 1em;
+    font-variant: normal;
+    font-weight: normal;
+}
+tbody tr.odd {
+    border: 1px solid #87CEFA;
+}
+tbody tr.odd td, tbody tr.odd th {
+    background: none repeat scroll 0 0 #F0F8FF;
+}
+tfoot td, tfoot th {
+    border: medium none;
+    padding-top: 10px;
+}
+caption {
+    color: #004477;
+    font-family: "Georgia",serif;
+    font-size: 150%;
+    font-style: italic;
+    letter-spacing: 5px;
+    padding: 10px 0;
+    text-align: left;
+    text-indent: 2em;
+    text-transform: uppercase;
+}
+table a:link {
+    color: #DC143C;
+}
+table th a:link {
+    color: #004477;
+    text-decoration: none;
+}
+table a:visited {
+    color: #003366;
+    text-decoration: line-through;
+}
+table a:hover {
+    color: #000000;
+    text-decoration: none;
+}
+table a:active {
+    color: #000000;
+}</style>';
+		
+		
+		$table = $style;
+		$table .=  "<table> ";
 		$table .=  "<tr> ";
 		$table .=  "<th> Control Number </th> ";
 		$table .=  "<th> Product Code</th> ";
@@ -277,21 +370,37 @@ public function addInTransactionAction()
 		$table .=  "</table> ";
         
         
-		$hostname    = $_SERVER['HTTP_HOST'];
-		$fullLink = "http://" . $hostname . $this->url()->fromRoute('application/default', array(
-										'controller' => 'inventory',
-										'action' => 'sendDailyTransactionsReport',
-										));
-		$transport = $this->getServiceLocator()->get('mail.transport');
-		$message = new Message();
-		$message->addTo('ahmed.gamal@ahmedgamal.info')
-						->addFrom('smpt@ahmedgamal.info')
-						->setSubject('Atco inventory : Transactions log for '. date('l \t\h\e jS'))
-						->setBody("Please, click the link for full log " . $fullLink );
-		$transport->send($message);
 
-        return new ViewModel(array('table'=> $table ) );
-    }
+		$transport = $this->getServiceLocator()->get('mail.transport');
+		$title = "<h2>".'Atco inventory : Transactions log for '. date('l \t\h\e jS')."</h2> " ;
+		$messagContent = $title ."<hr />".$table ;
+		
+ 
+
+		$html = new MimePart($messagContent);
+		$html->type = "text/html";
+
+ 
+		$body = new MimeMessage();
+		$body->setParts(array( $html ));
+
+		$message = new Message();
+
+	 	$admins = $em->getRepository('CsnUser\Entity\User')->findBy(array('role'=>3));
+
+		$message->addTo('ahmed.gamal@ahmedgamal.info');
+		foreach($admins as $admin){
+				$message->addTo($admin->getEmail());
+			}
+
+
+		$message->addFrom('smpt@ahmedgamal.info')
+						->setSubject('Atco inventory : Transactions log for '. date('l \t\h\e jS'))
+						->setBody($body);
+		$transport->send($message);
+		return new ViewModel(array('table'=>$table));
+
+     }
 
 
 
