@@ -52,6 +52,8 @@ return array(
 					'showProduct' => 'viewmember',
 					'moveToReleased' => 'member',
 					'moveToRejected' => 'viewmember',
+					'listCustomers' => 'viewmember',
+					
 					
 					'addTransaction' => 'member',
 					'addInTransaction' => 'admin',

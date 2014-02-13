@@ -18,6 +18,10 @@ class InventoryController extends AbstractActionController
 {
     public function indexAction()
     {
+        return new ViewModel();
+    }
+    public function listCustomersAction()
+    {
         $em = $this->getServiceLocator()
             ->get('doctrine.entitymanager.orm_default');
 		$data = $em->getRepository('Application\Entity\Customer')->findAll();
