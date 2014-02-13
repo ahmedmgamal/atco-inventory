@@ -53,10 +53,9 @@ return array(
 					'moveToReleased' => 'member',
 					'moveToRejected' => 'viewmember',
 					'listCustomers' => 'viewmember',
-					
-					
+					'sendDailyTransactionsReport' => 'member',
 					'addTransaction' => 'member',
-					'addInTransaction' => 'admin',
+					'addInTransaction' => 'member',
 					'addControl' => 'member',
 					
 					

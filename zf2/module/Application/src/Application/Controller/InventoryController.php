@@ -85,12 +85,9 @@ class InventoryController extends AbstractActionController
 		$control = $em->find('Application\Entity\Control',$controlId ); 
 		$control->setRejected($control->getQuarntine());
 		$control->setQuarntine(0.0);
-		
 		$em->flush();
+
 		$this->redirect()->toRoute('application/default',array('controller'=>'inventory','action'=>'showControl', 'id' => $this->params()->fromRoute('id')) );
-
-
-
         return new ViewModel(array('customer'=>$data[0],'controls'=>$result));
     }
     
@@ -140,7 +137,6 @@ class InventoryController extends AbstractActionController
 					$em->flush();
 					
 					$this->redirect()->toRoute('application/default',array('controller'=>'inventory','action'=>'showCustomer', 'id' => $this->params()->fromRoute('id')) );
-					//echo "Good Form "; die();
 				}
 
 		}
@@ -179,18 +175,14 @@ class InventoryController extends AbstractActionController
 				 	if($control->getQuarntine()>0.0) $control->setQuarntine($control->getBalance());
 				 	if($control->getReleased()>0.0) $control->setReleased($control->getBalance());
 				 	if($control->getRejected()>0.0) $control->setRejected($control->getBalance());
-				 	
-				 	
  					$em->flush();
 
  					$newControlTransactions->setcontrol($control );
 					$newControlTransactions->setUser($this->identity());
 					$newControlTransactions->setBalance($control->getBalance());
-					
 					$em->persist($newControlTransactions);
-
 					$em->flush();
-					
+
 					$this->redirect()->toRoute('application/default',array('controller'=>'inventory','action'=>'showControl', 'id' => $this->params()->fromRoute('id')) );
 					
 				}
@@ -237,6 +229,69 @@ public function addInTransactionAction()
         
 		return new ViewModel(array('form'=>$form));
 	}
+
+ public function sendDailyTransactionsReportAction()
+    {
+        $em = $this->getServiceLocator()->get('doctrine.entitymanager.orm_default');
+        //$t = new   Application\Entity\ControlTransaction ;
+		
+		$query = $em->createQuery("SELECT t FROM Application\Entity\ControlTransactions t where t.dateCreated > :date");
+		$query->setParameter('date', new \DateTime('today'));
+		
+		$transactions =  $query->getResult();
+		echo count($transactions);
+		$table =  "<table> ";
+		$table .=  "<tr> ";
+		$table .=  "<th> Control Number </th> ";
+		$table .=  "<th> Product Code</th> ";
+		$table .=  "<th> Product Name </th> ";
+		$table .=  "<th> In ammount </th> ";
+		$table .=  "<th> Out ammount </th> ";
+		$table .=  "<th> Balance </th> ";
+		$table .=  "<th> Description </th> ";
+		$table .=  "<th> Receipt No </th> ";
+		$table .=  "<th> User </th> ";
+		$table .=  "<th> Date Time </th> ";
+		
+		
+
+		$table .=  "</tr> ";
+		
+		foreach($transactions as $trans){ 
+			$table .=  "<tr> ";
+		
+			$table .=  "<td> ".$trans->getControl()->getControlNumber() ."</td>";
+			$table .=  "<td> ".$trans->getControl()->getCode() ."</td>";
+			$table .=  "<td> ".$trans->getControl()->getProductName() ."</td>";
+			$table .=  "<td> ".$trans->getIn() ."</td>";
+			$table .=  "<td> ".$trans->getOut() ."</td>";
+			$table .=  "<td> ".$trans->getBalance() ."</td>";
+			$table .=  "<td> ".$trans->getDescription() ."</td>";
+			$table .=  "<td> ".$trans->getReceiptNo() ."</td>";
+			$table .=  "<td> ".$trans->getUser()->getUsername()  ."</td>";
+			$table .=  "<td> ".$trans->getDateCreated()->format('d/m/Y H:i') ."</td>";
+ 
+			
+		$table .=  "</tr> ";
+		}  
+		$table .=  "</table> ";
+        
+        
+		$hostname    = $_SERVER['HTTP_HOST'];
+		$fullLink = "http://" . $hostname . $this->url()->fromRoute('application/default', array(
+										'controller' => 'inventory',
+										'action' => 'sendDailyTransactionsReport',
+										));
+		$transport = $this->getServiceLocator()->get('mail.transport');
+		$message = new Message();
+		$message->addTo('ahmed.gamal@ahmedgamal.info')
+						->addFrom('smpt@ahmedgamal.info')
+						->setSubject('Atco inventory : Transactions log for '. date('l \t\h\e jS'))
+						->setBody("Please, click the link for full log " . $fullLink );
+		$transport->send($message);
+
+        return new ViewModel(array('table'=> $table ) );
+    }
 
 
 

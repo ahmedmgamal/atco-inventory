@@ -25,6 +25,10 @@
  <label >Released :</label> <span class="clr" ><?=$this->control->getReleased()?></span> 
  <label >Rejected :</label> <span class="clr" ><?=$this->control->getRejected()?></span><br/>
 
+ <label >Created By  :</label> <span class="clr" ><?=$this->control->getUser()->getUsername()?></span> 
+ <label >Date Created  :</label> <span class="clr" ><?=$this->control->getDateCreated()->format('dd/mm/yyyy')?></span> 
+ 
+
 
 </div>
 
