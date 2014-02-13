@@ -240,10 +240,7 @@ table a:active{
     padding: 8px 12px;
     text-decoration: none;
 }
-.container{
-	 padding-top: 20px;
 
-}
 .btn-login, .btn-logout{
     padding-bottom: 0;
     padding-top: 0;
