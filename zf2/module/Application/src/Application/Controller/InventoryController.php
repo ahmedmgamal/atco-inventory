@@ -34,7 +34,6 @@ class InventoryController extends AbstractActionController
 
 		$rsm = new ResultSetMapping();
 		$rsm->addScalarResult('code', 'code');
-		$rsm->addScalarResult('product_code', 'product_code');
 		$rsm->addScalarResult('batch_no', 'batch_no');
 		$rsm->addScalarResult('product_type', 'product_type');
 		$rsm->addScalarResult('initial_ammount', 'initial_ammount');
@@ -49,12 +48,12 @@ class InventoryController extends AbstractActionController
  
 		
 		
-		$sql = "SELECT code ,	product_code ,	product_name ,	batch_no ,	product_type,sum(initial_ammount ) initial_ammount, sum(balance) balance,sum(quarntine) quarntine,sum(released) released,sum(rejected) rejected, count(balance) control_count  FROM `control` WHERE `customer_id`=$customerId ";
+		$sql = "SELECT code ,	product_name ,	batch_no ,	product_type,sum(initial_ammount ) initial_ammount, sum(balance) balance,sum(quarntine) quarntine,sum(released) released,sum(rejected) rejected, count(balance) control_count  FROM `control` WHERE `customer_id`=$customerId ";
 		if($this->params()->fromPost('product_type')){
 			$sql .=" and product_type=".$this->params()->fromPost('product_type'); 
 			}
 
-		$sql .= " group by (product_code )";
+		$sql .= " group by (code )";
 		$query = $em->createNativeQuery($sql,$rsm);
 		$result = $query->getResult();
 		$addControlForm = new AddControlForm ();
@@ -121,7 +120,7 @@ class InventoryController extends AbstractActionController
 
 					$newControl->setCustomer($customer[0]);
 					$newControl->setbalance($newControl->getInitialAmmount());
-					$newControlTransactions->setQuarntine($newControl->getInitialAmmount());
+					$newControl->setQuarntine($newControl->getInitialAmmount());
 
 					$newControl->setUser($this->identity());
 					$em->persist($newControl);
