@@ -1,10 +1,10 @@
 <h3>Customer Inventory</h3>
-	<a href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'addTransaction','id'=>$this->control->getId()))?>">Add  Out Transaction</a>
-	<a href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'addInTransaction','id'=>$this->control->getId()))?>">Add  In Transaction</a>
+	<a class="button-link" href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'addTransaction','id'=>$this->control->getId()))?>">Add  Out Transaction</a>
+	<a class="button-link" href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'addInTransaction','id'=>$this->control->getId()))?>">Add  In Transaction</a>
 	<?php
 	if ($this->control->getQuarntine()>0.0) {?>
-	<a href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'moveToReleased','id'=>$this->control->getId()))?>">Move to Released </a>
-	<a href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'moveToRejected','id'=>$this->control->getId()))?>">Move to Rejected </a>
+	<a class="button-link" href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'moveToReleased','id'=>$this->control->getId()))?>">Move to Released </a>
+	<a class="button-link" href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'moveToRejected','id'=>$this->control->getId()))?>">Move to Rejected </a>
 	<?}?>
 
 
