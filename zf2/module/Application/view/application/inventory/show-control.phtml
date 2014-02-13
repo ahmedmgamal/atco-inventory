@@ -1,5 +1,11 @@
 <h3>Customer Inventory</h3>
-	<a href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'addTransaction','id'=>$this->control->getId()))?>">Add  New Control</a>
+	<a href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'addTransaction','id'=>$this->control->getId()))?>">Add  Out Transaction</a>
+	<a href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'addInTransaction','id'=>$this->control->getId()))?>">Add  In Transaction</a>
+	<?php
+	if ($this->control->getQuarntine()>0.0) {?>
+	<a href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'moveToReleased','id'=>$this->control->getId()))?>">Move to Released </a>
+	<a href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'moveToRejected','id'=>$this->control->getId()))?>">Move to Rejected </a>
+	<?}?>
 
 
 <div>
@@ -16,12 +22,14 @@
 <table>
 
 <tr>
-	<td> In </td>
-	<td> Out </td>
-	<td> description </td>
-	<td> recipt No </td>
-	<td> by  </td>
-	<td> date </td>
+	<th> In </th>
+	<th> Out </th>
+	<th> Balance </th>
+	
+	<th> description </th>
+	<th> recipt No </th>
+	<th> by  </th>
+	<th> date </th>
 
 </tr>
 
@@ -32,9 +40,10 @@
 	
 	<td> <?=$trans->getIn()?> </td>
 	<td> <?=$trans->getOut()?> </td>
+	<td> <?=$trans->getBalance()?> </td>
 	<td> <?=$trans->getDescription()?> </td>
 	<td> <?=$trans->getReceiptNo()?> </td>
-	<td> - </td>
+	<td> <?=$trans->getUser()->getUsername();?> </td>
 	<td> <?=$trans->getDateCreated()->format('d/m/Y');?> </td>
 	
 </tr>

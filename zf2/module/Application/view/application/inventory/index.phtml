@@ -3,20 +3,20 @@
 
 <table>
 
-<th>
-<td> Customer Id</td>
-<td> Customer Name</td>
-<td> Code</td>
-<td> Customer Address</td>
+<tr>
+<th> Id</th>
+<th> Customer Name</th>
+<th> Code</th>
+<th> Customer Address</th>
+<th>  </th>
 
-</th>
+</tr>
+ 
 <?php foreach($this->customers as $customer){?>
 <tr>
 	
 <td> <?=$customer->getId()?> </td>
-<td> <?=$customer->getName()?>
-	 
-</td>
+<td> <?=$customer->getName()?> </td>
 <td> <?=$customer->getCode()?></td>
 <td> <?=$customer->getAddress()?></td>
 <td>

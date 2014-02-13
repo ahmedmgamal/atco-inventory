@@ -1,7 +1,6 @@
 <?php
 namespace Application\Form;
 
-use Zend\Form\Form;
 use Doctrine\ORM\EntityManager;
 use Zend\Filter\FilterChain;
 use Zend\Filter\FilterPluginManager;
@@ -19,6 +18,8 @@ use DoctrineORMModule\Stdlib\Hydrator\DoctrineEntity;
 use Zend\InputFilter\Factory as InputFactory;
 use Zend\Validator\ValidatorChain;
 use Zend\Form\Annotation;
+use Zend\Form\Form;
+
 use Zend\Form\Annotation\AnnotationBuilder;
 use Application\Entity\Control;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
@@ -74,6 +75,76 @@ class AddControlForm
         
         return $form;
 	}
+
+
+function buildAddTransactionForm($em,$type='out')
+	{
+		$builder = new AnnotationBuilder();
+        $form    = $builder->createForm('Application\Entity\ControlTransactions');
+
+		$hydrator = new DoctrineHydrator($em);
+		$form->setHydrator($hydrator);
+		
+		if($type=='out'){
+			$form->remove('in');	
+		}else{
+			$form->remove('out');	
+			
+		}
+			
+        
+        
+		$form->add(array(
+			'name' => 'submit',
+			'attributes' => array(
+				'type' => 'submit',
+				'value' => 'Save',
+				'id' => 'submitbutton',
+			),
+		));
+
+        
+        return $form;
+	}
+
+
+function buildFilterForm($em )
+	{
+         $form    = new Form();
+
+		$form->add(array(
+			'type' => 'DoctrineModule\Form\Element\ObjectSelect',
+			'name' => 'product_type',
+			'options' => array(
+				'object_manager' => $em,
+				'target_class'   => '\Application\Entity\ProductType',
+				'property'       => 'id',
+				'label_generator' => function($targetEntity) {
+					return $targetEntity->getId() . ' - ' . $targetEntity->getName();
+				},
+
+			),
+		));
+		
+			
+        
+        
+		$form->add(array(
+			'name' => 'submit',
+			'attributes' => array(
+				'type' => 'submit',
+				'value' => 'Save',
+				'id' => 'submitbutton',
+			),
+		));
+
+        
+        return $form;
+	}
+
+
+
+
 
 
 }

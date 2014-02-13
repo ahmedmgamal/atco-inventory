@@ -1,0 +1,44 @@
+<h3>Product  Inventory</h3>
+	back
+
+<div>
+ 
+</div>
+
+
+<table>
+
+<tr>
+	<th> control number </th>
+	<th> Product Name </th>
+	<th> Product Type </th>
+	<th> Expiry Date </th>
+	<th> Initial Ammount </th>
+	<th> Balance </th>
+
+	<th> Qurantine </th>
+	<th> Released </th>
+	<th> Rejected 	</th>
+</tr>
+
+
+ 
+<?php foreach($this->controls as $control){
+ ?>
+<tr>
+	
+	<td> <?=$control->getControlNumber()?> </td>
+	<td> <?=$control->getProductName()?> </td>
+	<td> <?=$control->getProductType()->getName()?> </td>
+	<td> <?=$control->getExpiryDate()->format('d/m/Y');?> </td>
+	<td>  <?=$control->getInitialAmmount()?> </td>
+	<td> <?=$control->getBalance()?> </td>
+
+	<td> <?=$control->getQuarntine()?> </td>
+	<td> <?=$control->getReleased()?> </td>
+	<td> <?=$control->getRejected()?> </td>
+	<td> <a href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'showControl','id'=>$control->getId()))?>"> show Details </a> </td>
+
+</tr>
+<?php } ?>
+</table>

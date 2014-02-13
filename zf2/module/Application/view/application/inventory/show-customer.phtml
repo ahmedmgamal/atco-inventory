@@ -8,33 +8,45 @@
  <label >Code</label><span class="clr" ><?=$this->customer->getCode()?></span><br/>
  
 </div>
+<div>
 
+<?php echo $this->form()->render($this->filter_form); ?>
+</div>
 
 <table>
 
 <tr>
-	<td> control number </td>
-	<td> Product Name </td>
-	<td> Product Type </td>
-	<td> Initial Ammount </td>
-	<td> Qurantine </td>
-	<td> Released </td>
-	<td> Rejected 	</td>
+	<th> control number </th>
+	<th> Product Name </th>
+	<th> Product Type </th>
+	
+ 	<th> Initial Ammount </th>
+	<th> Balance </th>
+	<th> Controls Count </th>
+
+	<th> Qurantine </th>
+	<th> Released </th>
+	<th> Rejected 	</th>
 </tr>
 
 
  
-<?php foreach($this->customer->getControlsList() as $control){?>
+<?php foreach($this->controls as $control){
+  ?>
 <tr>
+ 
+	<td> <?=$control['code']?> </td>
+	<td> <?=$control['product_name']?> </td>
+	<td> <?=$control['product_type']?> </td>
+ 	<td>  <?=$control['initial_ammount']?> </td>
+	<td> <?=$control['balance']?> </td>
+	<td> <?=$control['control_count']?> </td>
 	
-	<td> <?=$control->getControlNumber()?> </td>
-	<td> <?=$control->getProductName()?> </td>
-	<td> <?=$control->getProductType()->getName()?> </td>
-	<td>  <?=$control->getInitialAmmount()?> </td>
-	<td> - </td>
-	<td> - </td>
-	<td> - </td>
-	<td> <a href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'showControl','id'=>$control->getId()))?>"> show Details </a> </td>
+
+	<td> <?=$control['quarntine']?> </td>
+	<td> <?=$control['released']?> </td>
+	<td> <?=$control['rejected']?> </td>
+	<td> <a href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'showProduct','id'=>$control['product_code']))?>"> show Details </a> </td>
 
 </tr>
 <?php } ?>

@@ -10,6 +10,8 @@ use Zend\Form\Annotation;
  *
  * @ORM\Table(name="control", uniqueConstraints={@ORM\UniqueConstraint(name="control_number", columns={"control_number"})}, indexes={@ORM\Index(name="fk_Control_Customer1_idx", columns={"customer_id"}), @ORM\Index(name="fk_Control_user1_idx", columns={"user_id"}), @ORM\Index(name="fk_control_Product_Type1_idx", columns={"Product_Type_id"}), @ORM\Index(name="fk_control_unit1_idx", columns={"unit_id"})})
  * @ORM\Entity
+ * @Annotation\Name("Control")
+ * @Annotation\Options({"label":"Control"})
 
  */
 class Control
@@ -76,7 +78,7 @@ class Control
     /**
      * @var \DateTime
      * @Annotation\Attributes({"type":"Date","id":"expiry_date"})
-     * @Annotation\Options({"label":"expiry_date"})
+     * @Annotation\Options({"label":"expiry_date (m/d/y)"})
      * @Annotation\Required(true)
      * @ORM\Column(name="expiry_date", type="date", precision=0, scale=0, nullable=true, unique=false)
      */
@@ -102,6 +104,14 @@ class Control
      * @ORM\Column(name="initial_ammount", type="decimal", precision=10, scale=2, nullable=true, unique=false)
      */
     public $initialAmmount;
+
+
+    /**
+     * @var string
+     * @ORM\Column(name="balance", type="decimal", precision=10, scale=2, nullable=true, unique=false)
+     * @Annotation\Exclude()
+     */
+    public $balance;
 
     /**
      * @var string
@@ -380,6 +390,28 @@ class Control
     public function setInitialAmmount($initialAmmount)
     {
         $this->initialAmmount = $initialAmmount;
+
+        return $this;
+    }
+
+    /**
+     * Get balance
+     *
+     * @return decimal 
+     */
+    public function getBalance()
+    {
+        return $this->balance;
+    }
+    /**
+     * Set balance
+     *
+     * @param string $balance
+     * @return Control
+     */
+    public function setBalance($balance)
+    {
+        $this->balance = $balance;
 
         return $this;
     }

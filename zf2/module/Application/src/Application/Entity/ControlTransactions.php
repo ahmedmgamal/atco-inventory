@@ -3,12 +3,14 @@
 namespace Application\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Zend\Form\Annotation;
 
 /**
  * ControlTransactions
  *
  * @ORM\Table(name="control_transactions", indexes={@ORM\Index(name="fk_control_transactions_Control1_idx", columns={"control_id"}), @ORM\Index(name="fk_control_transactions_user1_idx", columns={"user_id"})})
  * @ORM\Entity
+ * @Annotation\Name("Control")
  */
 class ControlTransactions
 {
@@ -18,47 +20,56 @@ class ControlTransactions
      * @ORM\Column(name="id", type="integer", precision=0, scale=0, nullable=false, unique=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @Annotation\Exclude()
      */
     private $id;
 
     /**
      * @var string
-     *
+     * @Annotation\Attributes({"type":"Number","id":"in"})
+     * @Annotation\Options({"label":"in"})
      * @ORM\Column(name="`in`", type="decimal", precision=10, scale=2, nullable=true, unique=false)
      */
     private $in;
 
     /**
      * @var string
-     *
+     * @Annotation\Attributes({"type":"Number","id":"out"})
+     * @Annotation\Options({"label":"out"})
      * @ORM\Column(name="`out`", type="decimal", precision=10, scale=2, nullable=true, unique=false)
      */
     private $out;
 
     /**
      * @var string
-     *
+     * @Annotation\Exclude()
      * @ORM\Column(name="ammount", type="decimal", precision=10, scale=2, nullable=true, unique=false)
      */
     private $ammount;
 
     /**
      * @var string
-     *
+     * @Annotation\Filter({"name":"StringTrim"})
+     * @Annotation\Validator({"name":"StringLength", "options":{"min":1, "max":512}})
+     * @Annotation\Attributes({"type":"text","id":"description"})
+     * @Annotation\Options({"label":"description"})
      * @ORM\Column(name="description", type="string", length=512, precision=0, scale=0, nullable=true, unique=false)
      */
     private $description;
 
     /**
      * @var string
-     *
+     * @Annotation\Filter({"name":"StringTrim"})
+     * @Annotation\Validator({"name":"StringLength", "options":{"min":1, "max":512}})
+     * @Annotation\Attributes({"type":"text","id":"receiptNo"})
+     * @Annotation\Options({"label":"receiptNo"})
      * @ORM\Column(name="receipt_no", type="string", length=45, precision=0, scale=0, nullable=true, unique=false)
      */
     private $receiptNo;
 
     /**
      * @var \DateTime
-     *
+     * @Annotation\Exclude()
      * @ORM\Column(name="date_created", type="datetime", precision=0, scale=0, nullable=true, unique=false)
      */
     private $dateCreated;
@@ -70,7 +81,8 @@ class ControlTransactions
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="control_id", referencedColumnName="id", nullable=true)
      * })
-     */
+	 * @Annotation\Exclude()
+	*/
     private $control;
 
     /**
@@ -80,10 +92,18 @@ class ControlTransactions
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=true)
      * })
+     * @Annotation\Exclude()
      */
     private $user;
 
-
+    /**
+     * @var string
+     * @ORM\Column(name="balance", type="decimal", precision=10, scale=2, nullable=true, unique=false)
+     * @Annotation\Exclude()
+     */
+    public $balance;
+    
+    
     /**
      * Get id
      *
@@ -276,5 +296,26 @@ class ControlTransactions
     public function getUser()
     {
         return $this->user;
+    }
+        /**
+     * Get balance
+     *
+     * @return decimal 
+     */
+    public function getBalance()
+    {
+        return $this->balance;
+    }
+    /**
+     * Set balance
+     *
+     * @param string $balance
+     * @return ControlTransaction
+     */
+    public function setBalance($balance)
+    {
+        $this->balance = $balance;
+
+        return $this;
     }
 }

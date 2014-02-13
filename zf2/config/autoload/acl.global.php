@@ -24,12 +24,12 @@ return array(
          */
         'redirect_route' => array(
             'params' => array(
-                //'controller' => 'my_controllet',
-                //'action' => 'my_action',
+                'controller' => 'Index',
+                'action' => 'invalidAccess',
                 //'id' => '1',
             ),
             'options' => array(
-                'name' => 'login', 
+                'name' => 'application/default', 
             ),
         ),
         /**
@@ -38,11 +38,28 @@ return array(
          */
         'roles' => array(
             'guest'   => null,
-            'member'  => 'guest',
+            'viewmember'  => 'guest',
+            'member'  => 'viewmember',
             'admin'  => 'member',
         ),
         'resources' => array(
             'allow' => array(
+            
+				'Application\Controller\Inventory' => array(
+					'showControl'	=> 'viewmember',
+					'index' => 'guest',
+					'showCustomer' => 'viewmember',
+					'showProduct' => 'viewmember',
+					'moveToReleased' => 'member',
+					'moveToRejected' => 'viewmember',
+					
+					'addTransaction' => 'member',
+					'addInTransaction' => 'admin',
+					'addControl' => 'member',
+					
+					
+
+				), 
 				'CsnUser\Controller\Registration' => array(
 					'index'	=> 'guest',
 					'changePassword' => 'member',
@@ -94,6 +111,8 @@ return array(
 				),
 				'Application\Controller\Index' => array(
 					'index'   => 'guest',
+					'invalidAccess'   => 'guest',
+					
 				),
 				// for CMS articles
                                 'all' => array(
