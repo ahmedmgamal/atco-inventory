@@ -244,3 +244,14 @@ table a:active{
 	 padding-top: 20px;
 
 }
+.btn-login, .btn-logout{
+    padding-bottom: 0;
+    padding-top: 0;
+    float: right;
+    
+}
+.username{
+        padding: 5px;
+		float:right;
+		color: #999999;
+}
