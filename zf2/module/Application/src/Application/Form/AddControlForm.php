@@ -133,7 +133,7 @@ function buildFilterForm($em )
 			'name' => 'submit',
 			'attributes' => array(
 				'type' => 'submit',
-				'value' => 'Save',
+				'value' => 'Filter',
 				'id' => 'submitbutton',
 			),
 		));

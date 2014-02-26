@@ -40,12 +40,7 @@ class ControlTransactions
      */
     private $out;
 
-    /**
-     * @var string
-     * @Annotation\Exclude()
-     * @ORM\Column(name="ammount", type="decimal", precision=10, scale=2, nullable=true, unique=false)
-     */
-    private $ammount;
+
 
     /**
      * @var string
@@ -160,28 +155,6 @@ class ControlTransactions
         return $this->out;
     }
 
-    /**
-     * Set ammount
-     *
-     * @param string $ammount
-     * @return ControlTransactions
-     */
-    public function setAmmount($ammount)
-    {
-        $this->ammount = $ammount;
-
-        return $this;
-    }
-
-    /**
-     * Get ammount
-     *
-     * @return string 
-     */
-    public function getAmmount()
-    {
-        return $this->ammount;
-    }
 
     /**
      * Set description

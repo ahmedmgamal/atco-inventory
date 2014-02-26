@@ -13,12 +13,14 @@ use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Application\Form\AddControlForm;
 use Application\Entity\Control;
+use Application\Entity\Unit;
+
 use Doctrine\ORM\Query\ResultSetMapping;
 use Zend\Mail\Message;
 
 use Zend\Mime\Message as MimeMessage;
 use Zend\Mime\Part as MimePart;
-
+use PHPExcel;
 
 
 class InventoryController extends AbstractActionController
@@ -46,7 +48,7 @@ class InventoryController extends AbstractActionController
 		$rsm = new ResultSetMapping();
 		$rsm->addScalarResult('code', 'code');
 		$rsm->addScalarResult('batch_no', 'batch_no');
-		$rsm->addScalarResult('product_type', 'product_type');
+		$rsm->addScalarResult('product_type_id', 'product_type');
 		$rsm->addScalarResult('initial_ammount', 'initial_ammount');
 		$rsm->addScalarResult('balance', 'balance');
 		$rsm->addScalarResult('product_name', 'product_name');
@@ -59,9 +61,9 @@ class InventoryController extends AbstractActionController
  
 		
 		
-		$sql = "SELECT code ,	product_name ,	batch_no ,	product_type,sum(initial_ammount ) initial_ammount, sum(balance) balance,sum(quarntine) quarntine,sum(released) released,sum(rejected) rejected, count(balance) control_count  FROM `control` WHERE `customer_id`=$customerId ";
+		$sql = "SELECT code ,	product_name ,	batch_no ,	product_type_id, sum(initial_ammount ) initial_ammount, sum(balance) balance,sum(quarntine) quarntine,sum(released) released,sum(rejected) rejected, count(balance) control_count  FROM `control` WHERE `customer_id`=$customerId ";
 		if($this->params()->fromPost('product_type')){
-			$sql .=" and product_type=".$this->params()->fromPost('product_type'); 
+			$sql .=" and product_type_id=".$this->params()->fromPost('product_type'); 
 			}
 
 		$sql .= " group by (code )";
@@ -155,6 +157,183 @@ class InventoryController extends AbstractActionController
 		}
         
 		return new ViewModel(array('form'=>$form));
+	}
+function csv_to_array($filename='',$customerId,$productType)
+{	
+    if(!file_exists($filename) || !is_readable($filename))
+        return FALSE;
+    
+    $handle = fopen($filename, 'r');
+    $controlsChunk = array();
+    $data = array();
+    //ignoring first line
+    $headerRow = fgetcsv($handle);
+	$ChunksCounter = 1;
+	while (($row = fgetcsv($handle)) !== FALSE)
+	{	
+		$controlsChunk[] =   $row ;
+		//echo $counter++;
+		if(count($controlsChunk) == 48) 
+			{
+				echo "\n Chunk number ".$ChunksCounter++.":";
+				
+				
+				$this->extractControls($controlsChunk,$customerId,$productType);
+				
+				$controlsChunk =array();
+
+			}
+
+		
+		
+
+	}
+
+
+	fclose($handle);
+    return $data;
+}
+
+ 
+
+ public function extractControls($controlsChunk,$customerId,$productType)
+	{	
+		//$this->params()->fromQuery('productType');
+		//$customerId = $this->params()->fromQuery('customerId');
+		$em = $this->getServiceLocator()->get('doctrine.entitymanager.orm_default');
+		$user = $this->identity();
+		if(!$this->identity()){
+			$users =  $em->getRepository('CsnUser\Entity\User')->findById(1);
+			$user = $users[0];
+		}
+        $counter =1;
+		for ($i=0;$i<700;$i=$i+7){
+			if($controlsChunk[0][$i+1] == null) {
+				continue;
+			}
+			else{
+				echo $counter++.',';
+				//echo '<hr/>Name:'.$controlsChunk[0][$i+1];
+				
+
+				$customer = $em->getRepository('Application\Entity\Customer')->findById($customerId);
+				$productType = $em->getRepository('Application\Entity\ProductType')->findById($productType);
+				$unit = null;
+				$dbunit = $em->getRepository('Application\Entity\Unit')->findOneBy(   array('unit' => $controlsChunk[3][$i+5]));
+				
+				if ($dbunit){
+					//echo "found";
+					$unit = $dbunit ;
+					
+				}else{
+					//echo "new unit !!!!";
+					$unit =    new \Application\Entity\Unit();
+					$unit->setUnit($controlsChunk[3][$i+5]);
+					$em->persist($unit);
+					$em->flush(); 
+				}
+					
+ 				
+				$balance  = $controlsChunk[46][$i+2];
+				$expiryDate = $controlsChunk[1][$i+2] ?$controlsChunk[1][$i+2] :"1/1/2000";
+				$productName =  $controlsChunk[0][$i+1];
+				$batchNo = $controlsChunk[1][$i+1];
+				$productCode = $controlsChunk[1][$i+5]? $controlsChunk[1][$i+5] :md5($productName).'-00'.$customerId;
+				$controlNo = $controlsChunk[3][$i+1]? $controlsChunk[3][$i+1] :md5($productName.$batchNo.$customerId);
+ 
+				$newControl = new Control();	
+				$newControl->setCustomer($customer[0]);
+				$newControl->setbalance($controlsChunk[46][$i+2]);
+				$newControl->setQuarntine($balance);
+				$newControl->setBatchNo($batchNo);
+				$newControl->setCode($productCode);
+				$newControl->setControlNumber($controlNo);
+				try{
+					$newControl->setExpiryDate(new \DateTime($expiryDate));
+				}catch(\Exception  $e){
+					//hand the case of invalid date with format d/m/y 
+					//all dates MUST be in format m/d/y
+					echo "koko";
+					$x= \DateTime::createFromFormat('d/m/Y',$expiryDate);
+					$newControl->setExpiryDate($x);
+				}
+
+				
+				
+				$newControl->setInitialAmmount($controlsChunk[5][$i]);
+				$newControl->setProductName($productName);
+				$newControl->setProductType($productType[0]);
+				$newControl->setSupplier($controlsChunk[2][$i+1]);
+				$newControl->setUnit($unit);
+				$newControl->setUser($user);
+				$newControl->setDateCreated(new \DateTime());
+				$em->persist($newControl);
+				$em->flush(); 
+		 
+
+				//adding list of transactions 
+				$transactionBalance = 0 ;
+				for ($j=5;$j<46;$j++){
+
+					
+					if($controlsChunk[$j][$i] ||$controlsChunk[$j][$i+1]){
+						$newControlTransactions = new \Application\Entity\ControlTransactions();
+						$newControlTransactions->setIn($controlsChunk[$j][$i]);
+						$newControlTransactions->setOut($controlsChunk[$j][$i+1]);
+						$transactionBalance += $controlsChunk[$j][$i] - $controlsChunk[$j][$i+1];
+						$newControlTransactions->setbalance($transactionBalance);
+
+						$newControlTransactions->setDescription($controlsChunk[$j][$i+4].' - '.$controlsChunk[$j][$i+5]);
+						$newControlTransactions->setReceiptNo($controlsChunk[$j][$i+3] );
+						
+						$newControlTransactions->setcontrol($newControl);
+						$newControlTransactions->setUser($user);
+						$newControlTransactions->setDateCreated(new \DateTime());
+
+						 $em->persist($newControlTransactions);
+						//echo "<br/>Transaction Added";
+						$em->flush(); 
+						}
+					
+					}
+		 						
+				}
+			}
+		
+		
+	}
+ public function importControlsAction()
+	{
+		$em = $this->getServiceLocator()->get('doctrine.entitymanager.orm_default');
+		
+		$request = $this->getRequest();
+		$filename   = $request->getParam('filename');
+		$inputs = explode('_',$filename  );
+		print_r($inputs );
+		$customer = $em->getRepository('Application\Entity\Customer')->findOneBy(   array('name' => $inputs[0]));
+		$productType = $em->getRepository('Application\Entity\ProductType')->findOneBy(   array('name' => $inputs[1]));
+		
+		
+		if (!($customer && $productType)){
+			echo "No Customer or wrong type ";
+			die();
+		}
+
+ 	
+	
+		$inputFileName = "/var/www/atco/zf2/public/csv/".$filename.'.csv';
+		$customerId=$customer->getId();
+		$productType=$productType->getId();
+		
+		echo $inputFileName.'\n';
+		echo $customerId.'\n';
+		echo $customerId.'\n';
+		
+		
+		$data = $this->csv_to_array($inputFileName,$customerId,$productType);
+		rename ($inputFileName , $inputFileName.'.done');
+	return ;
+		
 	}
 
 

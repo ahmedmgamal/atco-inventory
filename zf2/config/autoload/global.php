@@ -12,5 +12,6 @@
  */
 
 return array(
-    // ...
+     'PHPExcel'=>__DIR__.'/../../vendor/library/PHPExcel/PHPExcel.php'  
 );
+ 

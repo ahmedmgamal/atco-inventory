@@ -173,16 +173,7 @@ class Control
      */
     public $productType;
 
-    /**
-     * @var \Application\Entity\Unit
-     *
-     * @ORM\ManyToOne(targetEntity="Application\Entity\Unit")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="unit_id", referencedColumnName="id", nullable=true)
-     * })
-     * @Annotation\Exclude()
-     */
-    public $unit;
+ 
 
     /**
      * @var \Application\Entity\User
@@ -194,6 +185,17 @@ class Control
      * @Annotation\Exclude()
      */
     public $user;
+    
+    /**
+     * @var \Application\Entity\Unit
+     *
+     * @ORM\ManyToOne(targetEntity="Application\Entity\Unit")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="unit_id", referencedColumnName="id", nullable=true)
+     * })
+     * @Annotation\Exclude()
+     */
+    public $unit;
 
     /**
      * @ORM\OneToMany(targetEntity="ControlTransactions", mappedBy="control",cascade={"persist"})
@@ -266,28 +268,7 @@ class Control
         return $this->code;
     }
 
-    /**
-     * Set productCode
-     *
-     * @param string $productCode
-     * @return Control
-     */
-    public function setProductCode($productCode)
-    {
-        $this->productCode = $productCode;
 
-        return $this;
-    }
-
-    /**
-     * Get productCode
-     *
-     * @return string 
-     */
-    public function getProductCode()
-    {
-        return $this->productCode;
-    }
 
     /**
      * Set productName
@@ -380,6 +361,10 @@ class Control
     {
         return $this->supplier;
     }
+
+ 
+
+ 
 
     /**
      * Set initialAmmount

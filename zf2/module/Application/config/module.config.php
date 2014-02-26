@@ -81,8 +81,21 @@ return array(
 							
 						)
 					)
-				)
-			)
+				),
+				'import' => array(
+					'options' => array(
+						'route'    => 'import <filename> ',
+						'defaults' => array(
+								'__NAMESPACE__' => 'Application\Controller',
+								'controller'    => 'Inventory',
+								'action'        => 'importControls',
+                        
+							
+						)
+					)
+				),
+				
+ 			)
 		)
 	),
     'service_manager' => array(

@@ -51,6 +51,7 @@ return array(
 					'showCustomer' => 'viewmember',
 					'showProduct' => 'viewmember',
 					'moveToReleased' => 'member',
+					'importControls' => 'member',
 					'moveToRejected' => 'viewmember',
 					'listCustomers' => 'viewmember',
 					'sendDailyTransactionsReport' => 'member',
