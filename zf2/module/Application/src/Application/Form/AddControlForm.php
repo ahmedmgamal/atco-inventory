@@ -149,15 +149,52 @@ function buildFilterForm($em )
 function buildEditControlDatesForm($em )
 	{
          $form    = new Form();
+ 
+		$form->add(array(
+			'type' => 'text',
+			'name' => 'controlNumber',
+			'id' => 'control_number',
+			'attributes'=>array("id"=>"control_number"),			
 
+			'options' => array(
+ 				'label' => 'controlNumber',
+
+			),
+		));
+ 
 		$form->add(array(
 			'type' => 'date',
 			'name' => 'retestDate',
 			'id' => 'retest_date',
+			'attributes'=>array("id"=>"retest_date"),			
+			'options' => array(
+ 				'label' => 'Retest Date(m/d/Y)',
+ 				'format' => 'm/d/Y'
+
+			),
+		));
+ 
+		$form->add(array(
+			'type' => 'date',
+			'name' => 'expiryDate',
+			'id' => 'expiry_date',
+			'attributes'=>array("id"=>"expiry_date"),
+			'options' => array(
+ 				'label' => 'expiryDate(m/d/Y)',
+ 				'format' => 'm/d/Y'
+
+			),
+		));
+ 
+		$form->add(array(
+			'type' => 'text',
+			'name' => 'location',
+			'id' => 'location',
+			'attributes'=>array("id"=>"location"),			
 			
 			'options' => array(
- 				'label' => 'Retest Date',
- 				'format' => 'm/d/Y'
+ 				'label' => 'Location',
+ 				
 
 			),
 		));

@@ -74,6 +74,16 @@ class Control
     public $batchNo;
 
  
+   /**
+     * @var string
+     * @Annotation\Filter({"name":"StringTrim"})
+     * @Annotation\Attributes({"type":"text","id":"location"})
+     * @Annotation\Options({"label":"Location"})
+     * @ORM\Column(name="location", type="string", length=45, precision=0, scale=0, nullable=true, unique=false)
+     */
+    public $location;
+
+ 
 
     /**
      * @var \DateTime
@@ -566,6 +576,28 @@ class Control
     public function setStatus($status)
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * Get Location
+     *
+     * @return string 
+     */
+    public function getLocation()
+    {
+        return $this->location;
+    }
+     /**
+     * Set Location
+     *
+     * @param string $Location
+     * @return Control
+     */
+    public function setLocation($location)
+    {
+        $this->location = $location;
 
         return $this;
     }

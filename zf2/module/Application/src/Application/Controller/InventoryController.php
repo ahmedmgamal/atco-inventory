@@ -206,24 +206,25 @@ function csv_to_array($filename='',$customerId,$productType)
     //ignoring first line
     $headerRow = fgetcsv($handle);
     $ChunksCounter = 1;
-    $chunckRowsNo = $productType ==2? 17: 48;
+    
+    $chunckRowsNo = ($productType ==2) ? 17: 48;
+    
     
 	while (($row = fgetcsv($handle)) !== FALSE)
 	{	
-		if($productType == 2 && $ChunksCounter==1  ){	$chunckRowsNo = 18 ; } else {$chunckRowsNo = 17;}
+		if(($productType == 2 && $ChunksCounter==1)  ){	$chunckRowsNo = 18 ; }
+		if(($productType == 2 && $ChunksCounter!=1)  ){	$chunckRowsNo = 17 ; }
+		 
 
+ 
+		
+		
 		$controlsChunk[] =   $row ;
 		
 		$endOfChunk = true;
 		
-		for ($cell =0 ; $cell<300;$cell ++){
-			
-			if ($row[$cell]){
-				$endOfChunk = false;
-				break ;
-				}
-			
-			}
+ 
+		
 		if(count($controlsChunk) == $chunckRowsNo) 
 		//if($endOfChunk )
 			{
@@ -239,9 +240,6 @@ function csv_to_array($filename='',$customerId,$productType)
 				$controlsChunk =array();
 
 			}
-
-		
-		
 
 	}
 
@@ -309,14 +307,11 @@ function csv_to_array($filename='',$customerId,$productType)
 				}catch(\Exception  $e){
 					//hand the case of invalid date with format d/m/y 
 					//all dates MUST be in format m/d/y
-					echo "!d/m/Y date!($expiryDate)";
+//					echo "!d/m/Y date!($expiryDate)";
 					try{
-						echo "in try";
-						$x = date_create_from_format('d/m/Y',$expiryDate);
-						echo "date created ";
-						//$x= \DateTime::createFromFormat('d/m/Y',$expiryDate);
-						print_r($x);
-						$newControl->setExpiryDate($x);
+ 						$x = date_create_from_format('d/m/Y',$expiryDate);
+ 						//$x= \DateTime::createFromFormat('d/m/Y',$expiryDate);
+ 						$newControl->setExpiryDate($x);
 						}catch(\Exception  $e){
 							echo "nested catchccc";
 							$newControl->setExpiryDate(new \DateTime("1/1/2000"));
@@ -434,14 +429,13 @@ public function extractFinishControls($controlsChunk,$customerId,$productType)
 					//all dates MUST be in format m/d/y
 					echo "!d/m/Y date!($expiryDate)";
 					try{
-						echo "in try";
-						$x = date_create_from_format('d/m/Y',$expiryDate);
-						echo "date created ";
+						
+
+						 
 						//$x= \DateTime::createFromFormat('d/m/Y',$expiryDate);
-						print_r($x);
 						$newControl->setExpiryDate($x);
 						}catch(\Exception  $e){
-							echo "nested catchccc";
+							
 							$newControl->setExpiryDate(new \DateTime("1/1/2000"));
 
 						}
@@ -516,12 +510,12 @@ public function extractFinishControls($controlsChunk,$customerId,$productType)
 		$productType=$productType->getId();
 		
 		echo $inputFileName.'\n';
-		echo $customerId.'\n';
-		echo $customerId.'\n';
-		
+		echo $customerId.'\n$productType';
+		echo  $productType.'\n';
+		 
 		
 		$data = $this->csv_to_array($inputFileName,$customerId,$productType);
-		//rename ($inputFileName , $inputFileName.'.done');
+		rename ($inputFileName , $inputFileName.'.done');
 	return ;
 		
 	}
@@ -549,12 +543,6 @@ public function extractFinishControls($controlsChunk,$customerId,$productType)
        
         $em = $this->getServiceLocator()->get('doctrine.entitymanager.orm_default');
 		$control = $em->find('Application\Entity\Control',$this->params()->fromRoute('id'));
-
-
- 
- 
- 
- 		
 		$addControlForm = new AddControlForm ();
 		$form = $addControlForm->buildEditControlDatesForm($em);
 		$form->setHydrator(new  ObjectProperty());
@@ -567,6 +555,8 @@ public function extractFinishControls($controlsChunk,$customerId,$productType)
 			$form->setData($request->getPost());
 			if ($form->isValid()) {
 				$control->setRetestDate(date_create_from_format('m/d/Y',$form->getData()->getRetestDate())) ;
+				
+				$control->setExpiryDate(date_create_from_format('m/d/Y',$form->getData()->getExpiryDate())) ;
 				$em->flush();
 				$this->redirect()->toRoute('application/default',array('controller'=>'inventory','action'=>'showControl', 'id' => $this->params()->fromRoute('id')) );
 			

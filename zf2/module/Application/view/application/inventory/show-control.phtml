@@ -1,7 +1,7 @@
 <h3>Customer Inventory</h3>
 	<a class="button-link" href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'addTransaction','id'=>$this->control->getId()))?>">Add  Out Transaction</a>
 	<a class="button-link" href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'addInTransaction','id'=>$this->control->getId()))?>">Add  In Transaction</a>
-	<a class="button-link" href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'editRetestDate','id'=>$this->control->getId()))?>">Edit Retest Date</a>
+	<a class="button-link" href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'editRetestDate','id'=>$this->control->getId()))?>">Edit Control  </a>
 	
 	<?php
 	if($this->control->getBalance() >0 ){
@@ -25,7 +25,7 @@
  <br/>
  <label >Exp.date :</label> <span class="clr" ><?=$this->control->getExpiryDate()->format('d/m/y')?></span> 
  <label >Retest date :</label> <span class="clr" ><?=$this->control->getRetestDate() ? $this->control->getRetestDate()->format('d/m/y'): ''?></span> 
- <label >Manufacturing  date :</label> <span class="clr" ><?=$this->control->getManufacturingDate()->format('d/m/y')?></span> 
+ <label >Manufacturing  date :</label> <span class="clr" ><?=$this->control->getManufacturingDate() ? $this->control->getManufacturingDate()->format('d/m/y'):""?></span> 
  
  <br/>
   
