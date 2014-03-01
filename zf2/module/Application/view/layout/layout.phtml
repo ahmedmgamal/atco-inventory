@@ -39,7 +39,9 @@
                 <div class="navbar-header">
                     <ul class="nav navbar-nav">
                         <li class="active"><a href="<?php echo $this->url('home') ?>"><?php echo $this->translate('Home') ?></a></li>
-                        <li class="active"><a href="<?php echo $this->url('memberhome') ?>"><?php echo $this->translate('Customers') ?></a></li>
+                        <li class=""><a href="<?php echo $this->url('memberhome') ?>"><?php echo $this->translate('Customers') ?></a></li>
+                        <li class=""><a href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'sendDailyTransactionsReport'),array('query'=>array('viewOnly'=>true)))?>"> Latest Transactions </a> </li>
+
                          
                     </ul>
                 </div><!--/.nav-collapse -->

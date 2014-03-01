@@ -113,32 +113,6 @@ class Control
      */
     public $balance;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="quarntine", type="decimal", precision=10, scale=2, nullable=true, unique=false)
-     * @Annotation\Exclude()
-
-     */
-    public $quarntine;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="released", type="decimal", precision=10, scale=2, nullable=true, unique=false)
-     * @Annotation\Exclude()
-
-     */
-    public $released;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="rejected", type="decimal", precision=10, scale=2, nullable=true, unique=false)
-     * @Annotation\Exclude()
-
-     */
-    public $rejected;
 
     /**
      * @var string
@@ -147,6 +121,22 @@ class Control
 
      */
     public $dateCreated;
+
+    /**
+     * @var \DateTime
+     * @ORM\Column(name="retest_date", type="date", precision=0, scale=0, nullable=true, unique=false)
+     * @Annotation\Attributes({"type":"Date","id":"retest_date"})
+     * @Annotation\Options({"label":"Retest Date (m/d/y)"})
+     */
+    public $retestDate;
+
+    /**
+     * @var \DateTime
+     * @ORM\Column(name="manufacturing_date", type="date", precision=0, scale=0, nullable=true, unique=false)
+     * @Annotation\Attributes({"type":"Date","id":"manufacturingDate"})
+     * @Annotation\Options({"label":"manufacturingDate (m/d/y)"})
+     */
+    public $manufacturingDate;
 
     /**
      * @var \Application\Entity\Customer
@@ -196,6 +186,15 @@ class Control
      * @Annotation\Exclude()
      */
     public $unit;
+    
+    /**
+     * @var string
+     * @ORM\Column(name="status", type="string", length=45, nullable=true, unique=false)
+     * @Annotation\Exclude()
+     */
+    public $status;
+    
+    
 
     /**
      * @ORM\OneToMany(targetEntity="ControlTransactions", mappedBy="control",cascade={"persist"})
@@ -412,75 +411,6 @@ class Control
     }
 
     /**
-     * Set quarntine
-     *
-     * @param string $quarntine
-     * @return Control
-     */
-    public function setQuarntine($quarntine)
-    {
-        $this->quarntine = $quarntine;
-
-        return $this;
-    }
-
-    /**
-     * Get quarntine
-     *
-     * @return string 
-     */
-    public function getQuarntine()
-    {
-        return $this->quarntine;
-    }
-
-    /**
-     * Set released
-     *
-     * @param string $released
-     * @return Control
-     */
-    public function setReleased($released)
-    {
-        $this->released = $released;
-
-        return $this;
-    }
-
-    /**
-     * Get released
-     *
-     * @return string 
-     */
-    public function getReleased()
-    {
-        return $this->released;
-    }
-
-    /**
-     * Set rejected
-     *
-     * @param string $rejected
-     * @return Control
-     */
-    public function setRejected($rejected)
-    {
-        $this->rejected = $rejected;
-
-        return $this;
-    }
-
-    /**
-     * Get rejected
-     *
-     * @return string 
-     */
-    public function getRejected()
-    {
-        return $this->rejected;
-    }
-
-    /**
      * Set dateCreated
      *
      * @param string $dateCreated
@@ -627,4 +557,72 @@ class Control
         return $this->controlTransactionsList;
 
     }
+    /**
+     * Set status
+     *
+     * @param string $status
+     * @return Control
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * Get status
+     *
+     * @return string 
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+    
+        /**
+     * Set retest Date
+     *
+     * @param \DateTime $retestDate
+     * @return Control
+     */
+    public function setRetestDate($retestDate)
+    {
+        $this->retestDate = $retestDate;
+
+        return $this;
+    }
+
+    /**
+     * Get retestDate
+     *
+     * @return \DateTime 
+     */
+    public function getRetestDate()
+    {
+        return $this->retestDate;
+    }
+     /**
+     * Set ManufacturingDate
+
+     * @param \DateTime $manufacturingDate
+     * @return Control
+     */
+    public function setManufacturingDate($manufacturingDate)
+    {
+        $this->manufacturingDate = $manufacturingDate;
+
+        return $this;
+    }
+
+    /**
+     * Get manufacturingDate
+     *
+     * @return \DateTime 
+     */
+    public function getManufacturingDate()
+    {
+        return $this->manufacturingDate;
+    }
+    
 }

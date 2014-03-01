@@ -1,10 +1,13 @@
-<h3>Product  Inventory</h3>
-	back
+<h2><?=$this->controls[0]->getProductName()?>  Inventory  </h2>
+	
 
 <div>
+	<a class="button-link "  href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'showCustomer', 'id'=>$this->controls[0]->getCustomer()->getId()))?>">Back</a>
+	<a class="button-link "  href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'addControl','id'=>$this->controls[0]->getCustomer()->getId()), array('query'=>array('controlId'=>$this->controls[0]->getId())))?>">Add  New Control to <?=$this->controls[0]->getProductName()?> </a>
+ 
  
 </div>
-
+<br/>
 
 <table>
 
@@ -13,12 +16,13 @@
 	<th> Product Name </th>
 	<th> Product Type </th>
 	<th> Expiry Date </th>
+	<th> Batch No </th>
+	
 	<th> Initial Ammount </th>
 	<th> Balance </th>
 
-	<th> Qurantine </th>
-	<th> Released </th>
-	<th> Rejected 	</th>
+	<th> Status </th>
+	
 </tr>
 
 
@@ -31,12 +35,13 @@
 	<td> <?=$control->getProductName()?> </td>
 	<td> <?=$control->getProductType()->getName()?> </td>
 	<td> <?=$control->getExpiryDate()->format('d/m/Y');?> </td>
+	<td> <?=$control->getBatchNo() ?> </td>
+	
 	<td>  <?=$control->getInitialAmmount()?> </td>
 	<td> <?=$control->getBalance()?> </td>
 
-	<td> <?=$control->getQuarntine()?> </td>
-	<td> <?=$control->getReleased()?> </td>
-	<td> <?=$control->getRejected()?> </td>
+	<td> <?=$control->getStatus()?> </td>
+ 
 	<td> <a href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'showControl','id'=>$control->getId()))?>"> show Details </a> </td>
 
 </tr>

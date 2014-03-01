@@ -14,7 +14,7 @@ use Zend\View\Model\ViewModel;
 use Application\Form\AddControlForm;
 use Application\Entity\Control;
 use Application\Entity\Unit;
-
+use Zend\Stdlib\Hydrator\ObjectProperty;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Zend\Mail\Message;
 
@@ -56,19 +56,26 @@ class InventoryController extends AbstractActionController
 		$rsm->addScalarResult('quarntine', 'quarntine');
 		$rsm->addScalarResult('released', 'released');
 		$rsm->addScalarResult('rejected', 'rejected');
-
+		$rsm->addScalarResult('expired', 'expired');
+		$rsm->addScalarResult('status', 'status');
 		
+		
+ 		
  
 		
 		
-		$sql = "SELECT code ,	product_name ,	batch_no ,	product_type_id, sum(initial_ammount ) initial_ammount, sum(balance) balance,sum(quarntine) quarntine,sum(released) released,sum(rejected) rejected, count(balance) control_count  FROM `control` WHERE `customer_id`=$customerId ";
+		
 		if($this->params()->fromPost('product_type')){
-			$sql .=" and product_type_id=".$this->params()->fromPost('product_type'); 
-			}
+			//$sql = "SELECT code ,	product_name ,	batch_no ,	product_type_id, sum(initial_ammount ) initial_ammount, sum(balance) balance,sum(quarntine) quarntine,sum(released) released,sum(rejected) rejected, count(balance) control_count  FROM `control` WHERE `customer_id`=$customerId ";
+			$sql = "SELECT code,product_name ,	batch_no ,	product_type_id, sum(initial_ammount ) initial_ammount, sum(balance) balance,sum(if(status='released',balance,0)) released,sum(if(status='quarantine',balance,0)) quarntine ,sum(if(status='rejected',balance,0)) rejected ,sum(if(status='expired',balance,0)) expired,status , count(balance) control_count   FROM `control` WHERE ";
+			$sql .= " `customer_id`=$customerId ";
+			$sql .= " and product_type_id=".$this->params()->fromPost('product_type'); 
+			$sql .= " group by (code )";
+			$query = $em->createNativeQuery($sql,$rsm);
+			$result = $query->getResult();
+		}
 
-		$sql .= " group by (code )";
-		$query = $em->createNativeQuery($sql,$rsm);
-		$result = $query->getResult();
+
 		$addControlForm = new AddControlForm ();
 		$form = $addControlForm->buildFilterForm($em);
         return new ViewModel(array('customer'=>$data[0],'controls'=>$result,'filter_form'=>$form));
@@ -78,22 +85,34 @@ class InventoryController extends AbstractActionController
         $em = $this->getServiceLocator()->get('doctrine.entitymanager.orm_default');
         $controlId = $this->params()->fromRoute('id');
 		$control = $em->find('Application\Entity\Control',$controlId ); 
-		$control->setReleased($control->getQuarntine());
-		$control->setQuarntine(0.0);
-		
+        $control->setStatus('released');
 		$em->flush();
 		$this->redirect()->toRoute('application/default',array('controller'=>'inventory','action'=>'showControl', 'id' => $this->params()->fromRoute('id')) );
-
-		
+	
  
     }
-  public function moveToRejectedAction()
+    
+    
+  public function moveToExpiredAction()
     {
         $em = $this->getServiceLocator()->get('doctrine.entitymanager.orm_default');
         $controlId = $this->params()->fromRoute('id');
 		$control = $em->find('Application\Entity\Control',$controlId ); 
-		$control->setRejected($control->getQuarntine());
-		$control->setQuarntine(0.0);
+        $control->setStatus('expired');
+		$em->flush();
+		$this->redirect()->toRoute('application/default',array('controller'=>'inventory','action'=>'showControl', 'id' => $this->params()->fromRoute('id')) );
+	
+ 
+    }
+    
+    
+  public function moveToRejectedAction()
+    {
+        $em = $this->getServiceLocator()->get('doctrine.entitymanager.orm_default');
+        $controlId = $this->params()->fromRoute('id');
+        $control = $em->find('Application\Entity\Control',$controlId ); 
+        $control->setStatus('rejected');
+		
 		$em->flush();
 
 		$this->redirect()->toRoute('application/default',array('controller'=>'inventory','action'=>'showControl', 'id' => $this->params()->fromRoute('id')) );
@@ -106,7 +125,7 @@ class InventoryController extends AbstractActionController
         $em = $this->getServiceLocator()->get('doctrine.entitymanager.orm_default');
         $productId = $this->params()->fromRoute('id');
 		$data = $em->getRepository('Application\Entity\Control')->findBy( array('code' => $productId));
-
+		
 		return new ViewModel(array('controls'=>$data  ));
 		
     }
@@ -120,6 +139,23 @@ class InventoryController extends AbstractActionController
 		$addControlForm = new AddControlForm ();
 		$form = $addControlForm->build($em);
 		$newControl = new Control();
+		
+		if ($this->params()->fromQuery('controlId')){
+
+			
+				$control = $em->getRepository('Application\Entity\Control')->findById($this->params()->fromQuery('controlId'));
+			
+				$newControl->setCode($control[0]->getCode());
+				$newControl->setControlNumber("tmep".time());
+				$newControl->setProductName($control[0]->getProductName());
+				$newControl->setProductType($control[0]->getProductType());
+				
+				
+
+			
+			}
+		
+		
 		$form->bind($newControl);
 
         $request = $this->getRequest();
@@ -130,7 +166,7 @@ class InventoryController extends AbstractActionController
 
 					$newControl->setCustomer($customer[0]);
 					$newControl->setbalance($newControl->getInitialAmmount());
-					$newControl->setQuarntine($newControl->getInitialAmmount());
+					$newControl->setStatus('quarantine');
 
 					$newControl->setUser($this->identity());
 					$newControl->setDateCreated(new \DateTime());
@@ -151,7 +187,7 @@ class InventoryController extends AbstractActionController
 
 					$em->flush();
 					
-					$this->redirect()->toRoute('application/default',array('controller'=>'inventory','action'=>'showCustomer', 'id' => $this->params()->fromRoute('id')) );
+					$this->redirect()->toRoute('application/default',array('controller'=>'inventory','action'=>'showProduct', 'id' => $newControl->getcode()) );
 				}
 
 		}
@@ -159,7 +195,8 @@ class InventoryController extends AbstractActionController
 		return new ViewModel(array('form'=>$form));
 	}
 function csv_to_array($filename='',$customerId,$productType)
-{	
+{	 
+
     if(!file_exists($filename) || !is_readable($filename))
         return FALSE;
     
@@ -168,17 +205,36 @@ function csv_to_array($filename='',$customerId,$productType)
     $data = array();
     //ignoring first line
     $headerRow = fgetcsv($handle);
-	$ChunksCounter = 1;
+    $ChunksCounter = 1;
+    $chunckRowsNo = $productType ==2? 17: 48;
+    
 	while (($row = fgetcsv($handle)) !== FALSE)
 	{	
+		if($productType == 2 && $ChunksCounter==1  ){	$chunckRowsNo = 18 ; } else {$chunckRowsNo = 17;}
+
 		$controlsChunk[] =   $row ;
-		//echo $counter++;
-		if(count($controlsChunk) == 48) 
+		
+		$endOfChunk = true;
+		
+		for ($cell =0 ; $cell<300;$cell ++){
+			
+			if ($row[$cell]){
+				$endOfChunk = false;
+				break ;
+				}
+			
+			}
+		if(count($controlsChunk) == $chunckRowsNo) 
+		//if($endOfChunk )
 			{
 				echo "\n Chunk number ".$ChunksCounter++.":";
+				if($productType ==2){
 				
+					$this->extractFinishControls($controlsChunk,$customerId,$productType);
 				
-				$this->extractControls($controlsChunk,$customerId,$productType);
+				}else{
+					$this->extractControls($controlsChunk,$customerId,$productType);
+				}
 				
 				$controlsChunk =array();
 
@@ -212,7 +268,7 @@ function csv_to_array($filename='',$customerId,$productType)
 				continue;
 			}
 			else{
-				echo $counter++.',';
+				echo $counter++;//."(".$controlsChunk[0][$i+1].")";
 				//echo '<hr/>Name:'.$controlsChunk[0][$i+1];
 				
 
@@ -244,7 +300,7 @@ function csv_to_array($filename='',$customerId,$productType)
 				$newControl = new Control();	
 				$newControl->setCustomer($customer[0]);
 				$newControl->setbalance($controlsChunk[46][$i+2]);
-				$newControl->setQuarntine($balance);
+				$newControl->setStatus('quarantine');
 				$newControl->setBatchNo($batchNo);
 				$newControl->setCode($productCode);
 				$newControl->setControlNumber($controlNo);
@@ -253,10 +309,20 @@ function csv_to_array($filename='',$customerId,$productType)
 				}catch(\Exception  $e){
 					//hand the case of invalid date with format d/m/y 
 					//all dates MUST be in format m/d/y
-					echo "koko";
-					$x= \DateTime::createFromFormat('d/m/Y',$expiryDate);
-					$newControl->setExpiryDate($x);
-				}
+					echo "!d/m/Y date!($expiryDate)";
+					try{
+						echo "in try";
+						$x = date_create_from_format('d/m/Y',$expiryDate);
+						echo "date created ";
+						//$x= \DateTime::createFromFormat('d/m/Y',$expiryDate);
+						print_r($x);
+						$newControl->setExpiryDate($x);
+						}catch(\Exception  $e){
+							echo "nested catchccc";
+							$newControl->setExpiryDate(new \DateTime("1/1/2000"));
+
+						}
+				} 
 
 				
 				
@@ -298,6 +364,130 @@ function csv_to_array($filename='',$customerId,$productType)
 					}
 		 						
 				}
+				echo ',';
+			}
+		}
+		
+public function extractFinishControls($controlsChunk,$customerId,$productType)
+	{	
+		//$this->params()->fromQuery('productType');
+		//$customerId = $this->params()->fromQuery('customerId');
+		$em = $this->getServiceLocator()->get('doctrine.entitymanager.orm_default');
+		$user = $this->identity();
+		if(!$this->identity()){
+			$users =  $em->getRepository('CsnUser\Entity\User')->findById(1);
+			$user = $users[0];
+		}
+        $counter =1;
+		for ($i=0;$i<336;$i=$i+7){
+			$productName =  $controlsChunk[0][$i+1];
+			$batchNo = $controlsChunk[2][$i+1];
+
+			if($productName == null || $productName=='0' || $batchNo== null || $batchNo==0) {
+				//"echo leave bye";
+				//die();
+				continue;
+			}
+			else{
+				echo $counter++;//."(".$controlsChunk[0][$i+1].")";
+				//echo '<hr/>Name:'.$controlsChunk[0][$i+1];
+				$unitName ='finish_pack';
+				$customer = $em->getRepository('Application\Entity\Customer')->findById($customerId);
+				$productType = $em->getRepository('Application\Entity\ProductType')->findById($productType);
+				$unit = null;
+				$dbunit = $em->getRepository('Application\Entity\Unit')->findOneBy(   array('unit' => $unitName));
+				
+				if ($dbunit){
+					//echo "found";
+					$unit = $dbunit ;
+					
+				}else{
+					//echo "new unit !!!!";
+					$unit =    new \Application\Entity\Unit();
+					$unit->setUnit($unitName);
+					$em->persist($unit);
+					$em->flush(); 
+				}
+				
+	
+				$balance  = $controlsChunk[16][$i+3];
+				$expiryDate = $controlsChunk[1][$i+2] ?$controlsChunk[1][$i+3] :"1/1/2000";
+				$manufacturingDate = $controlsChunk[1][$i+2] ?$controlsChunk[0][$i+3] :"1/1/2000";
+				
+				$productName =  $controlsChunk[0][$i+1];
+				$productCode = $controlsChunk[1][$i+1]? $controlsChunk[1][$i+1] :md5($productName).'-00'.$customerId;
+				$controlNo = md5($productName.$batchNo.$customerId);
+
+ 	
+				$newControl = new Control();	
+				$newControl->setCustomer($customer[0]);
+				$newControl->setbalance($balance);
+				$newControl->setStatus('quarantine');
+				$newControl->setBatchNo($batchNo);
+				$newControl->setCode($productCode);
+				$newControl->setControlNumber($controlNo);
+				$newControl->setManufacturingDate(new \DateTime($manufacturingDate));
+				try{
+					$newControl->setExpiryDate(new \DateTime($expiryDate));
+				}catch(\Exception  $e){
+					//hand the case of invalid date with format d/m/y 
+					//all dates MUST be in format m/d/y
+					echo "!d/m/Y date!($expiryDate)";
+					try{
+						echo "in try";
+						$x = date_create_from_format('d/m/Y',$expiryDate);
+						echo "date created ";
+						//$x= \DateTime::createFromFormat('d/m/Y',$expiryDate);
+						print_r($x);
+						$newControl->setExpiryDate($x);
+						}catch(\Exception  $e){
+							echo "nested catchccc";
+							$newControl->setExpiryDate(new \DateTime("1/1/2000"));
+
+						}
+				} 
+
+				
+				
+				$newControl->setInitialAmmount($controlsChunk[4][$i+1]);
+				$newControl->setProductName($productName);
+				$newControl->setProductType($productType[0]);
+				//$newControl->setSupplier($controlsChunk[2][$i+1]);
+				$newControl->setUnit($unit);
+				$newControl->setUser($user);
+				$newControl->setDateCreated(new \DateTime());
+				$em->persist($newControl);
+				$em->flush(); 
+		 
+
+				//adding list of transactions 
+				$transactionBalance = 0 ;
+				for ($j=4;$j<count($controlsChunk);$j++){
+
+					
+					if($controlsChunk[$j][$i] ||$controlsChunk[$j][$i+1]){
+						$newControlTransactions = new \Application\Entity\ControlTransactions();
+						$newControlTransactions->setIn($controlsChunk[$j][$i+1]);
+						$newControlTransactions->setOut($controlsChunk[$j][$i+2]);
+						$transactionBalance += $controlsChunk[$j][$i+1] - $controlsChunk[$j][$i+2];
+						$newControlTransactions->setbalance($transactionBalance);
+
+						$newControlTransactions->setDescription($controlsChunk[$j][$i+5] );
+						$newControlTransactions->setReceiptNo($controlsChunk[$j][$i+4] );
+						
+						$newControlTransactions->setcontrol($newControl);
+						$newControlTransactions->setUser($user);
+						$newControlTransactions->setDateCreated(new \DateTime());
+
+						 $em->persist($newControlTransactions);
+						//echo "<br/>Transaction Added";
+						$em->flush(); 
+						}
+					
+					}
+		 		//break;				
+				}
+				echo ',';
 			}
 		
 		
@@ -313,7 +503,7 @@ function csv_to_array($filename='',$customerId,$productType)
 		$customer = $em->getRepository('Application\Entity\Customer')->findOneBy(   array('name' => $inputs[0]));
 		$productType = $em->getRepository('Application\Entity\ProductType')->findOneBy(   array('name' => $inputs[1]));
 		
-		
+		echo $productType->getId();
 		if (!($customer && $productType)){
 			echo "No Customer or wrong type ";
 			die();
@@ -331,7 +521,7 @@ function csv_to_array($filename='',$customerId,$productType)
 		
 		
 		$data = $this->csv_to_array($inputFileName,$customerId,$productType);
-		rename ($inputFileName , $inputFileName.'.done');
+		//rename ($inputFileName , $inputFileName.'.done');
 	return ;
 		
 	}
@@ -339,10 +529,52 @@ function csv_to_array($filename='',$customerId,$productType)
 
  public function showControlAction()
     {
+       
+		$allowedActions = array(
+			'quarantine'=>array(array('method'=>'moveToReleased','label'=>'Move To Released'),array('method'=>'moveToRejected','label'=>'Move To Rejected'),),
+			'released'=>array(array('method'=>'moveToExpired','label'=>'Move To Expired'),array('method'=>'moveToRejected','label'=>'Move To Rejected')),
+			
+			
+		);
+		
+		
         $em = $this->getServiceLocator()->get('doctrine.entitymanager.orm_default');
 		$data = $em->getRepository('Application\Entity\Control')->findById($this->params()->fromRoute('id'));
 
-        return new ViewModel(array('control'=>$data[0]));
+        return new ViewModel(array('control'=>$data[0],'allowedActions'=>$allowedActions));
+    }
+
+ public function editRetestDateAction()
+    {
+       
+        $em = $this->getServiceLocator()->get('doctrine.entitymanager.orm_default');
+		$control = $em->find('Application\Entity\Control',$this->params()->fromRoute('id'));
+
+
+ 
+ 
+ 
+ 		
+		$addControlForm = new AddControlForm ();
+		$form = $addControlForm->buildEditControlDatesForm($em);
+		$form->setHydrator(new  ObjectProperty());
+		$form->bind($control );
+ 
+		echo '<br/>';
+ 
+       $request = $this->getRequest();
+		if ($request->isPost()) {
+			$form->setData($request->getPost());
+			if ($form->isValid()) {
+				$control->setRetestDate(date_create_from_format('m/d/Y',$form->getData()->getRetestDate())) ;
+				$em->flush();
+				$this->redirect()->toRoute('application/default',array('controller'=>'inventory','action'=>'showControl', 'id' => $this->params()->fromRoute('id')) );
+			
+				}
+
+		}
+        
+		return new ViewModel(array('form'=>$form,'control'=>$control));
     }
 
 
@@ -361,12 +593,8 @@ function csv_to_array($filename='',$customerId,$productType)
 			$form->setData($request->getPost());
 				if ($form->isValid()) {
 				 	$control = $em->find('Application\Entity\Control',$this->params()->fromRoute('id'));
- 
 				 	$control->setBalance($control->getBalance()-$newControlTransactions->getOut());
-				 	
-				 	if($control->getQuarntine()>0.0) $control->setQuarntine($control->getBalance());
-				 	if($control->getReleased()>0.0) $control->setReleased($control->getBalance());
-				 	if($control->getRejected()>0.0) $control->setRejected($control->getBalance());
+
  					$em->flush();
 
  					$newControlTransactions->setcontrol($control );
@@ -400,10 +628,7 @@ public function addInTransactionAction()
 				if ($form->isValid()) {
 				 	$control = $em->find('Application\Entity\Control',$this->params()->fromRoute('id'));
 				 	$control->setBalance($control->getBalance()+$newControlTransactions->getIn());
-				 	if($control->getQuarntine()>0.0) $control->setQuarntine($control->getBalance());
-				 	if($control->getReleased()>0.0) $control->setReleased($control->getBalance());
-				 	if($control->getRejected()>0.0) $control->setRejected($control->getBalance());
-				 	
+			 	
 
 					$newControlTransactions->setcontrol($control );
 					$newControlTransactions->setUser($this->identity());
@@ -428,10 +653,11 @@ public function addInTransactionAction()
         //$t = new   Application\Entity\ControlTransaction ;
 		
 		$query = $em->createQuery("SELECT t FROM Application\Entity\ControlTransactions t where t.dateCreated > :date");
-		$query->setParameter('date', new \DateTime('today'));
-		
+		//$query->setParameter('date', new \DateTime('today'));
+		$hours24Ago = new \DateTime('-24 hour');
+
+		$query->setParameter('date',$hours24Ago);
 		$transactions =  $query->getResult();
-		
 		
 		$style ='<style>table {
     -moz-border-bottom-colors: none;
@@ -576,8 +802,21 @@ table a:active {
 		$message->addFrom('smpt@ahmedgamal.info')
 						->setSubject('Atco inventory : Transactions log for '. date('l \t\h\e jS'))
 						->setBody($body);
+		
+
+		if(!$this->params()->fromQuery('viewOnly')==1){
 		$transport->send($message);
-		return new ViewModel(array('table'=>$table));
+		}
+		
+		
+		$viewModel = new ViewModel(array('table'=>$table));
+		$viewModel->setTemplate('application/inventory/send-daily-transactions-report');
+		
+		$renderer = $this->serviceLocator->get('Zend\View\Renderer\RendererInterface');
+		$htmlString = $renderer->render($viewModel);
+
+		
+		return $viewModel;
 
      }
 

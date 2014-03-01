@@ -119,6 +119,7 @@ function buildFilterForm($em )
 				'object_manager' => $em,
 				'target_class'   => '\Application\Entity\ProductType',
 				'property'       => 'id',
+				'label' => 'Filter By',
 				'label_generator' => function($targetEntity) {
 					return $targetEntity->getId() . ' - ' . $targetEntity->getName();
 				},
@@ -136,7 +137,45 @@ function buildFilterForm($em )
 				'value' => 'Filter',
 				'id' => 'submitbutton',
 			),
+
 		));
+
+        
+        return $form;
+	}
+
+
+
+function buildEditControlDatesForm($em )
+	{
+         $form    = new Form();
+
+		$form->add(array(
+			'type' => 'date',
+			'name' => 'retestDate',
+			'id' => 'retest_date',
+			
+			'options' => array(
+ 				'label' => 'Retest Date',
+ 				'format' => 'm/d/Y'
+
+			),
+		));
+ 
+		
+       $form->add(array(
+			'name' => 'submit',
+			'attributes' => array(
+				'type' => 'submit',
+				'value' => 'Save',
+				'id' => 'submitbutton',
+			),
+
+		));
+	
+        
+        
+
 
         
         return $form;

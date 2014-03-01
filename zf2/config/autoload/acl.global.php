@@ -51,6 +51,9 @@ return array(
 					'showCustomer' => 'viewmember',
 					'showProduct' => 'viewmember',
 					'moveToReleased' => 'member',
+					'moveToExpired' => 'member',
+					'editRetestDate' => 'member',
+					
 					'importControls' => 'member',
 					'moveToRejected' => 'viewmember',
 					'listCustomers' => 'viewmember',

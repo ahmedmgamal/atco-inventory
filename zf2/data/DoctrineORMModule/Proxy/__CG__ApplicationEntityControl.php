@@ -36,7 +36,7 @@ class Control extends \Application\Entity\Control implements \Doctrine\ORM\Proxy
      *
      * @see \Doctrine\Common\Persistence\Proxy::__getLazyProperties
      */
-    public static $lazyPropertiesDefaults = array('controlNumber' => NULL, 'code' => NULL, 'productName' => NULL, 'batchNo' => NULL, 'expiryDate' => NULL, 'supplier' => NULL, 'initialAmmount' => NULL, 'balance' => NULL, 'quarntine' => NULL, 'released' => NULL, 'rejected' => NULL, 'dateCreated' => NULL, 'customer' => NULL, 'productType' => NULL, 'unit' => NULL, 'user' => NULL, 'controlTransactionsList' => NULL);
+    public static $lazyPropertiesDefaults = array('controlNumber' => NULL, 'code' => NULL, 'productName' => NULL, 'batchNo' => NULL, 'expiryDate' => NULL, 'supplier' => NULL, 'initialAmmount' => NULL, 'balance' => NULL, 'dateCreated' => NULL, 'customer' => NULL, 'productType' => NULL, 'user' => NULL, 'unit' => NULL, 'status' => NULL, 'controlTransactionsList' => NULL);
 
 
 
@@ -46,7 +46,7 @@ class Control extends \Application\Entity\Control implements \Doctrine\ORM\Proxy
      */
     public function __construct($initializer = null, $cloner = null)
     {
-        unset($this->controlNumber, $this->code, $this->productName, $this->batchNo, $this->expiryDate, $this->supplier, $this->initialAmmount, $this->balance, $this->quarntine, $this->released, $this->rejected, $this->dateCreated, $this->customer, $this->productType, $this->unit, $this->user, $this->controlTransactionsList);
+        unset($this->controlNumber, $this->code, $this->productName, $this->batchNo, $this->expiryDate, $this->supplier, $this->initialAmmount, $this->balance, $this->dateCreated, $this->customer, $this->productType, $this->user, $this->unit, $this->status, $this->controlTransactionsList);
 
         $this->__initializer__ = $initializer;
         $this->__cloner__      = $cloner;
@@ -108,7 +108,7 @@ class Control extends \Application\Entity\Control implements \Doctrine\ORM\Proxy
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return array('__isInitialized__', 'id', 'controlNumber', 'code', 'productName', 'batchNo', 'expiryDate', 'supplier', 'initialAmmount', 'balance', 'quarntine', 'released', 'rejected', 'dateCreated', 'customer', 'productType', 'unit', 'user', 'controlTransactionsList');
+            return array('__isInitialized__', 'id', 'controlNumber', 'code', 'productName', 'batchNo', 'expiryDate', 'supplier', 'initialAmmount', 'balance', 'dateCreated', 'customer', 'productType', 'user', 'unit', 'status', 'controlTransactionsList');
         }
 
         return array('__isInitialized__', 'id');
@@ -133,7 +133,7 @@ class Control extends \Application\Entity\Control implements \Doctrine\ORM\Proxy
                 }
             };
 
-            unset($this->controlNumber, $this->code, $this->productName, $this->batchNo, $this->expiryDate, $this->supplier, $this->initialAmmount, $this->balance, $this->quarntine, $this->released, $this->rejected, $this->dateCreated, $this->customer, $this->productType, $this->unit, $this->user, $this->controlTransactionsList);
+            unset($this->controlNumber, $this->code, $this->productName, $this->batchNo, $this->expiryDate, $this->supplier, $this->initialAmmount, $this->balance, $this->dateCreated, $this->customer, $this->productType, $this->user, $this->unit, $this->status, $this->controlTransactionsList);
         }
     }
 
@@ -280,28 +280,6 @@ class Control extends \Application\Entity\Control implements \Doctrine\ORM\Proxy
     /**
      * {@inheritDoc}
      */
-    public function setProductCode($productCode)
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setProductCode', array($productCode));
-
-        return parent::setProductCode($productCode);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getProductCode()
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getProductCode', array());
-
-        return parent::getProductCode();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function setProductName($productName)
     {
 
@@ -429,72 +407,6 @@ class Control extends \Application\Entity\Control implements \Doctrine\ORM\Proxy
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getInitialAmmount', array());
 
         return parent::getInitialAmmount();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setQuarntine($quarntine)
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setQuarntine', array($quarntine));
-
-        return parent::setQuarntine($quarntine);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getQuarntine()
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getQuarntine', array());
-
-        return parent::getQuarntine();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setReleased($released)
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setReleased', array($released));
-
-        return parent::setReleased($released);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getReleased()
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getReleased', array());
-
-        return parent::getReleased();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setRejected($rejected)
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setRejected', array($rejected));
-
-        return parent::setRejected($rejected);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getRejected()
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getRejected', array());
-
-        return parent::getRejected();
     }
 
     /**
@@ -638,6 +550,28 @@ class Control extends \Application\Entity\Control implements \Doctrine\ORM\Proxy
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getControlTransactionsList', array());
 
         return parent::getControlTransactionsList();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setStatus($status)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setStatus', array($status));
+
+        return parent::setStatus($status);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getStatus()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getStatus', array());
+
+        return parent::getStatus();
     }
 
 }

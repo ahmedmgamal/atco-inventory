@@ -1,11 +1,15 @@
 <h3>Customer Inventory</h3>
 	<a class="button-link" href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'addTransaction','id'=>$this->control->getId()))?>">Add  Out Transaction</a>
 	<a class="button-link" href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'addInTransaction','id'=>$this->control->getId()))?>">Add  In Transaction</a>
+	<a class="button-link" href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'editRetestDate','id'=>$this->control->getId()))?>">Edit Retest Date</a>
+	
 	<?php
-	if ($this->control->getQuarntine()>0.0) {?>
-	<a class="button-link" href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'moveToReleased','id'=>$this->control->getId()))?>">Move to Released </a>
-	<a class="button-link" href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'moveToRejected','id'=>$this->control->getId()))?>">Move to Rejected </a>
-	<?}?>
+	if($this->control->getBalance() >0 ){
+	foreach($this->allowedActions[$this->control->getStatus()] as $action)	 {?>
+		<a class="button-link" href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>$action['method'],'id'=>$this->control->getId()))?>">Move to <?=$action['label']?> </a>
+	
+	<?}
+	}?>
 
 
 <div class="control">
@@ -15,16 +19,20 @@
  <br/>
 	 
  <label >Batch No. :</label> <span class="clr" ><?=$this->control->getBatchNo()?></span> 
- <label >Exp.date :</label> <span class="clr" ><?=$this->control->getExpiryDate()->format('d/m/y')?></span> 
  <label >Supplier/date :</label> <span class="clr" ><?=$this->control->getSupplier()?></span>
  <label >Unit :</label> <span class="clr" ><?=$this->control->getUnit()->getUnit()?></span>
  
  <br/>
+ <label >Exp.date :</label> <span class="clr" ><?=$this->control->getExpiryDate()->format('d/m/y')?></span> 
+ <label >Retest date :</label> <span class="clr" ><?=$this->control->getRetestDate() ? $this->control->getRetestDate()->format('d/m/y'): ''?></span> 
+ <label >Manufacturing  date :</label> <span class="clr" ><?=$this->control->getManufacturingDate()->format('d/m/y')?></span> 
  
- <label >Querntine :</label> <span class="clr" ><?=$this->control->getQuarntine()?></span> 
- <label >Released :</label> <span class="clr" ><?=$this->control->getReleased()?></span> 
- <label >Rejected :</label> <span class="clr" ><?=$this->control->getRejected()?></span><br/>
-
+ <br/>
+  
+ <label >Balance :</label> <span class="clr" ><?=$this->control->getBalance()?></span> 
+ <label >Status :</label> <span class="clr" ><?=$this->control->getStatus()?></span> 
+ 
+ <br/>
  <label >Created By  :</label> <span class="clr" ><?=$this->control->getUser()->getUsername()?></span> 
  <label >Date Created  :</label> <span class="clr" ><?=$this->control->getDateCreated()->format('d/m/y')?></span> 
  
