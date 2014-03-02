@@ -289,8 +289,9 @@ function csv_to_array($filename='',$customerId,$productType)
 					
  				
 				$balance  = $controlsChunk[46][$i+2];
-				$expiryDate = $controlsChunk[1][$i+2] ?$controlsChunk[1][$i+2] :"1/1/2000";
+				$expiryDate = ($controlsChunk[1][$i+2] ||$controlsChunk[1][$i+2] == 'Reject')?$controlsChunk[1][$i+2] :"1/1/2000";
 				$productName =  $controlsChunk[0][$i+1];
+				
 				$batchNo = $controlsChunk[1][$i+1];
 				$productCode = $controlsChunk[1][$i+5]? $controlsChunk[1][$i+5] :md5($productName).'-00'.$customerId;
 				$controlNo = $controlsChunk[3][$i+1]? $controlsChunk[3][$i+1] :md5($productName.$batchNo.$customerId);
