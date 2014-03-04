@@ -212,8 +212,8 @@ function csv_to_array($filename='',$customerId,$productType)
     
 	while (($row = fgetcsv($handle)) !== FALSE)
 	{	
-		if(($productType == 2 && $ChunksCounter==1)  ){	$chunckRowsNo = 18 ; }
-		if(($productType == 2 && $ChunksCounter!=1)  ){	$chunckRowsNo = 17 ; }
+		if((($productType ==2||$productType ==10)&& $ChunksCounter==1)  ){	$chunckRowsNo = 18 ; }
+		if((($productType ==2||$productType ==10) && $ChunksCounter!=1)  ){	$chunckRowsNo = 17 ; }
 		 
 
  
@@ -229,7 +229,7 @@ function csv_to_array($filename='',$customerId,$productType)
 		//if($endOfChunk )
 			{
 				echo "\n Chunk number ".$ChunksCounter++.":";
-				if($productType ==2){
+				if($productType ==2||$productType ==10){
 				
 					$this->extractFinishControls($controlsChunk,$customerId,$productType);
 				
@@ -642,14 +642,13 @@ public function addInTransactionAction()
     {
         $em = $this->getServiceLocator()->get('doctrine.entitymanager.orm_default');
         //$t = new   Application\Entity\ControlTransaction ;
-		
 		$query = $em->createQuery("SELECT t FROM Application\Entity\ControlTransactions t where t.dateCreated > :date");
 		//$query->setParameter('date', new \DateTime('today'));
 		$hours24Ago = new \DateTime('-24 hour');
 
 		$query->setParameter('date',$hours24Ago);
 		$transactions =  $query->getResult();
-		
+
 		$style ='<style>table {
     -moz-border-bottom-colors: none;
     -moz-border-left-colors: none;
@@ -784,7 +783,7 @@ table a:active {
 
 	 	$admins = $em->getRepository('CsnUser\Entity\User')->findBy(array('role'=>3));
 
-		$message->addTo('ahmed.gamal@ahmedgamal.info');
+		//$message->addTo('ahmed.gamal@ahmedgamal.info');
 		foreach($admins as $admin){
 				$message->addTo($admin->getEmail());
 			}
@@ -795,10 +794,10 @@ table a:active {
 						->setBody($body);
 		
 
-		if(!$this->params()->fromQuery('viewOnly')==1){
+//		if(!$this->params()->fromQuery('viewOnly')==1){
 		$transport->send($message);
-		}
-		
+	//	}
+
 		
 		$viewModel = new ViewModel(array('table'=>$table));
 		$viewModel->setTemplate('application/inventory/send-daily-transactions-report');
