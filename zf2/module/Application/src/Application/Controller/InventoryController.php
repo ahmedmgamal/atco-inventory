@@ -800,10 +800,10 @@ table a:active {
 
 		
 		$viewModel = new ViewModel(array('table'=>$table));
-		$viewModel->setTemplate('application/inventory/send-daily-transactions-report');
+	//	$viewModel->setTemplate('application/inventory/send-daily-transactions-report');
 		
-		$renderer = $this->serviceLocator->get('Zend\View\Renderer\RendererInterface');
-		$htmlString = $renderer->render($viewModel);
+	//	$renderer = $this->serviceLocator->get('Zend\View\Renderer\RendererInterface');
+	//	$htmlString = $renderer->render($viewModel);
 
 		
 		return $viewModel;
