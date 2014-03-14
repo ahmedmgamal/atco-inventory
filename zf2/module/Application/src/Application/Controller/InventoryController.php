@@ -289,7 +289,9 @@ function csv_to_array($filename='',$customerId,$productType)
 					
  				
 				$balance  = $controlsChunk[46][$i+2];
-				$expiryDate = ($controlsChunk[1][$i+2] ||$controlsChunk[1][$i+2] == 'Reject')?$controlsChunk[1][$i+2] :"1/1/2000";
+				$expiryDate = ($controlsChunk[1][$i+2] && !$controlsChunk[1][$i+2] == 'Reject')?$controlsChunk[1][$i+2] :"1/1/2000";
+				//echo $expiryDate;
+				
 				$productName =  $controlsChunk[0][$i+1];
 				
 				$batchNo = $controlsChunk[1][$i+1];
@@ -783,7 +785,7 @@ table a:active {
 
 	 	$admins = $em->getRepository('CsnUser\Entity\User')->findBy(array('role'=>3));
 
-		//$message->addTo('ahmed.gamal@ahmedgamal.info');
+		$message->addTo('ahmed.gamal@ahmedgamal.info');
 		foreach($admins as $admin){
 				$message->addTo($admin->getEmail());
 			}
@@ -798,7 +800,7 @@ table a:active {
 		$transport->send($message);
 	//	}
 
-		
+		//echo "message sent ";
 		$viewModel = new ViewModel(array('table'=>$table));
 	//	$viewModel->setTemplate('application/inventory/send-daily-transactions-report');
 		

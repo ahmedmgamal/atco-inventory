@@ -36,7 +36,7 @@ class Control extends \Application\Entity\Control implements \Doctrine\ORM\Proxy
      *
      * @see \Doctrine\Common\Persistence\Proxy::__getLazyProperties
      */
-    public static $lazyPropertiesDefaults = array('controlNumber' => NULL, 'code' => NULL, 'productName' => NULL, 'batchNo' => NULL, 'expiryDate' => NULL, 'supplier' => NULL, 'initialAmmount' => NULL, 'balance' => NULL, 'dateCreated' => NULL, 'customer' => NULL, 'productType' => NULL, 'user' => NULL, 'unit' => NULL, 'status' => NULL, 'controlTransactionsList' => NULL);
+    public static $lazyPropertiesDefaults = array('controlNumber' => NULL, 'code' => NULL, 'productName' => NULL, 'batchNo' => NULL, 'location' => NULL, 'expiryDate' => NULL, 'supplier' => NULL, 'initialAmmount' => NULL, 'balance' => NULL, 'dateCreated' => NULL, 'retestDate' => NULL, 'manufacturingDate' => NULL, 'customer' => NULL, 'productType' => NULL, 'user' => NULL, 'unit' => NULL, 'status' => NULL, 'controlTransactionsList' => NULL);
 
 
 
@@ -46,7 +46,7 @@ class Control extends \Application\Entity\Control implements \Doctrine\ORM\Proxy
      */
     public function __construct($initializer = null, $cloner = null)
     {
-        unset($this->controlNumber, $this->code, $this->productName, $this->batchNo, $this->expiryDate, $this->supplier, $this->initialAmmount, $this->balance, $this->dateCreated, $this->customer, $this->productType, $this->user, $this->unit, $this->status, $this->controlTransactionsList);
+        unset($this->controlNumber, $this->code, $this->productName, $this->batchNo, $this->location, $this->expiryDate, $this->supplier, $this->initialAmmount, $this->balance, $this->dateCreated, $this->retestDate, $this->manufacturingDate, $this->customer, $this->productType, $this->user, $this->unit, $this->status, $this->controlTransactionsList);
 
         $this->__initializer__ = $initializer;
         $this->__cloner__      = $cloner;
@@ -108,7 +108,7 @@ class Control extends \Application\Entity\Control implements \Doctrine\ORM\Proxy
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return array('__isInitialized__', 'id', 'controlNumber', 'code', 'productName', 'batchNo', 'expiryDate', 'supplier', 'initialAmmount', 'balance', 'dateCreated', 'customer', 'productType', 'user', 'unit', 'status', 'controlTransactionsList');
+            return array('__isInitialized__', 'id', 'controlNumber', 'code', 'productName', 'batchNo', 'location', 'expiryDate', 'supplier', 'initialAmmount', 'balance', 'dateCreated', 'retestDate', 'manufacturingDate', 'customer', 'productType', 'user', 'unit', 'status', 'controlTransactionsList');
         }
 
         return array('__isInitialized__', 'id');
@@ -133,7 +133,7 @@ class Control extends \Application\Entity\Control implements \Doctrine\ORM\Proxy
                 }
             };
 
-            unset($this->controlNumber, $this->code, $this->productName, $this->batchNo, $this->expiryDate, $this->supplier, $this->initialAmmount, $this->balance, $this->dateCreated, $this->customer, $this->productType, $this->user, $this->unit, $this->status, $this->controlTransactionsList);
+            unset($this->controlNumber, $this->code, $this->productName, $this->batchNo, $this->location, $this->expiryDate, $this->supplier, $this->initialAmmount, $this->balance, $this->dateCreated, $this->retestDate, $this->manufacturingDate, $this->customer, $this->productType, $this->user, $this->unit, $this->status, $this->controlTransactionsList);
         }
     }
 
@@ -566,12 +566,78 @@ class Control extends \Application\Entity\Control implements \Doctrine\ORM\Proxy
     /**
      * {@inheritDoc}
      */
+    public function getLocation()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getLocation', array());
+
+        return parent::getLocation();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setLocation($location)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setLocation', array($location));
+
+        return parent::setLocation($location);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getStatus()
     {
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getStatus', array());
 
         return parent::getStatus();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setRetestDate($retestDate)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setRetestDate', array($retestDate));
+
+        return parent::setRetestDate($retestDate);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getRetestDate()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getRetestDate', array());
+
+        return parent::getRetestDate();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setManufacturingDate($manufacturingDate)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setManufacturingDate', array($manufacturingDate));
+
+        return parent::setManufacturingDate($manufacturingDate);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getManufacturingDate()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getManufacturingDate', array());
+
+        return parent::getManufacturingDate();
     }
 
 }
