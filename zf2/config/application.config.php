@@ -11,7 +11,7 @@ return array(
         'DoctrineModule',
         'DoctrineORMModule',
         'CsnUser',
-        //'CsnAuthorization'
+        'CsnAuthorization'
         ),
     'module_listener_options' => array(
         'module_paths' => array(

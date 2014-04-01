@@ -362,6 +362,10 @@ function csv_to_array($filename='',$customerId,$productType)
 					}
 		 						
 				}
+                                $newControl->setBalance($transactionBalance);//break;
+                                $em->merge($newControl);
+                                $em->flush();
+
 				echo ',';
 			}
 		}
@@ -482,9 +486,12 @@ public function extractFinishControls($controlsChunk,$customerId,$productType)
 						}
 					
 					}
-		 		//break;				
+		 		$newControl->setBalance($transactionBalance);//break;				
+                                $em->merge($newControl);
+				$em->flush();
 				}
-				echo ',';
+				
+                                echo ',';
 			}
 		
 		
