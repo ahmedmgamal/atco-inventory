@@ -1,0 +1,29 @@
+
+<div class="collapse navbar-collapse col-xs-8" >
+
+    <ul class="nav navbar-nav">
+        <li class="active"><a href="<?php echo $this->url('home') ?>"><?php echo $this->translate('Home') ?></a></li>
+        <li class=""><a href="<?php echo $this->url('memberhome') ?>"><?php echo $this->translate('Customers') ?></a></li>
+ 		<li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Reports <b class="caret"></b></a>
+          <ul class="dropdown-menu">
+          	<li ><a href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'dailyTransactionsReport'),array('query'=>array('viewOnly'=>true)))?>"> Last 24 hr Transactions </a> </li>
+          	<li class="divider"></li>
+          
+          	<li ><a href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'expiredControlsReport'))?>"> Expired Controls </a> </li>
+          	<li ><a    href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'expiredControlsIn6MonthsReport'))?>">  Controls Expired In 6 Monthes </a> </li>
+          	<li class="divider"></li>
+          	
+          	<li class=""><a href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'customerControlsReport'),array('query'=>array('viewOnly'=>true)))?>"> Customers Controls </a> </li>
+          	<li class=""><a href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'expiredControlsReport'))?>"> Expired Controls </a> </li>
+          	<li class=""><a href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'expiredControlsIn6MonthsReport'))?>">  Controls Expired In 6 Monthes </a> </li>
+          	
+          	
+          	
+          	
+          	
+          </ul>
+        </li>
+         
+    </ul>
+</div>

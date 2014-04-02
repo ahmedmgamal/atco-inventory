@@ -76,8 +76,8 @@ class ControlTransactions
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="control_id", referencedColumnName="id", nullable=true)
      * })
-	 * @Annotation\Exclude()
-	*/
+     * @Annotation\Exclude()
+	 */
     private $control;
 
     /**

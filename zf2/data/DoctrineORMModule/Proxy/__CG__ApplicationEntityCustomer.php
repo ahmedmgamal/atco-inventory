@@ -36,7 +36,7 @@ class Customer extends \Application\Entity\Customer implements \Doctrine\ORM\Pro
      *
      * @see \Doctrine\Common\Persistence\Proxy::__getLazyProperties
      */
-    public static $lazyPropertiesDefaults = array('controlsList' => NULL);
+    public static $lazyPropertiesDefaults = array('name' => NULL, 'controlsList' => NULL);
 
 
 
@@ -46,7 +46,7 @@ class Customer extends \Application\Entity\Customer implements \Doctrine\ORM\Pro
      */
     public function __construct($initializer = null, $cloner = null)
     {
-        unset($this->controlsList);
+        unset($this->name, $this->controlsList);
 
         $this->__initializer__ = $initializer;
         $this->__cloner__      = $cloner;
@@ -111,7 +111,7 @@ class Customer extends \Application\Entity\Customer implements \Doctrine\ORM\Pro
             return array('__isInitialized__', 'id', 'name', 'address', 'code', 'email', 'controlsList');
         }
 
-        return array('__isInitialized__', 'id', 'name', 'address', 'code', 'email');
+        return array('__isInitialized__', 'id', 'address', 'code', 'email');
     }
 
     /**
@@ -133,7 +133,7 @@ class Customer extends \Application\Entity\Customer implements \Doctrine\ORM\Pro
                 }
             };
 
-            unset($this->controlsList);
+            unset($this->name, $this->controlsList);
         }
     }
 

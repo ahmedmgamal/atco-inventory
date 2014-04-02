@@ -3,10 +3,11 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
+        
         <?php echo $this->headTitle('ZF2 '. $this->translate('Inventory Application'))->setSeparator(' - ')->setAutoEscape(false) ?>
 
         <?php echo $this->headMeta()
-            ->appendName('viewport', 'width=device-width, initial-scale=1.0')
+            ->appendName('viewport', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no')
             ->appendHttpEquiv('X-UA-Compatible', 'IE=edge')
         ?>
 
@@ -14,12 +15,17 @@
         <?php echo $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/img/favicon.ico'))
                         ->prependStylesheet($this->basePath() . '/css/style.css')
                         ->prependStylesheet($this->basePath() . '/css/bootstrap-theme.min.css')
+                        ->prependStylesheet($this->basePath() . '/css/responsive-tables.css')
+                        
                         ->prependStylesheet($this->basePath() . '/css/bootstrap.min.css') ?>
 
         <!-- Scripts -->
         <?php echo $this->headScript()
+        	->prependFile($this->basePath() . '/js/responsive-tables.js')
+        
             ->prependFile($this->basePath() . '/js/bootstrap.min.js')
             ->prependFile($this->basePath() . '/js/jquery.min.js')
+            
             ->prependFile($this->basePath() . '/js/respond.min.js', 'text/javascript', array('conditional' => 'lt IE 9',))
             ->prependFile($this->basePath() . '/js/html5shiv.js',   'text/javascript', array('conditional' => 'lt IE 9',))
         ; ?>
@@ -27,7 +33,7 @@
     </head>
     <body>
         <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-            <div class="container">
+            <div class="container-fluid " >
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                         <span class="icon-bar"></span>
@@ -36,16 +42,10 @@
                     </button>
                     <a class="navbar-brand" href="<?php echo $this->url('home') ?>"><img src="<?php echo $this->basePath('img/zf2-logo.png') ?>" alt="ATCO Framework 2"/>&nbsp;<?php echo $this->translate('ATCO Inventory ') ?></a>
                 </div>
-                <div class="navbar-header">
-                    <ul class="nav navbar-nav">
-                        <li class="active"><a href="<?php echo $this->url('home') ?>"><?php echo $this->translate('Home') ?></a></li>
-                        <li class=""><a href="<?php echo $this->url('memberhome') ?>"><?php echo $this->translate('Customers') ?></a></li>
-                        <li class=""><a href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'sendDailyTransactionsReport'),array('query'=>array('viewOnly'=>true)))?>"> Latest Transactions </a> </li>
-
-                         
-                    </ul>
-                </div><!--/.nav-collapse -->
-                <div class="collapse navbar-collapse">
+				<?php echo $this->partial('layout/menu')?>
+				
+				<!--/.nav-collapse -->
+                <div class="collapse navbar-collapse col-xs-2">
 					<?php $this->partial('application/index/user',array()); ?>
 					<div class="">
 						<?php 
@@ -69,11 +69,11 @@
 				</div>
             </div>
         </nav>
-        <div class="container">
+        <div class="container-fluid ">
             <?php echo $this->content; ?>
-            <hr>
+
             <footer>
-                <p>&copy;   <?php echo date('Y') ?> by AG Technologies Ltd. <?php echo $this->translate('All rights reserved for ATCOpharma.') ?></p>
+                <p class="col-xs-12" >&copy;   <?php echo date('Y') ?> by AG Technologies Ltd. <?php echo $this->translate('All rights reserved for ATCOpharma.') ?></p>
             </footer>
         </div> <!-- /container -->
         <?php echo $this->inlineScript() ?>

@@ -1,47 +1,58 @@
-<h3>Customer Inventory</h3>
-	<a class="button-link" href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'addTransaction','id'=>$this->control->getId()))?>">Add  Out Transaction</a>
-	<a class="button-link" href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'addInTransaction','id'=>$this->control->getId()))?>">Add  In Transaction</a>
-	<a class="button-link" href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'editRetestDate','id'=>$this->control->getId()))?>">Edit Control  </a>
+<h3 class="page-header">Customer Inventory</h3>
+
+<p class=" ">
+	<?php
+	if($this->control->getBalance() >0 ) {?>
+		<a class="button-link btn-sm" href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'addTransaction','id'=>$this->control->getId()))?>">Add  Out Transaction</a>
+		
+	<?
+	}?>
+	<a class="button-link btn-sm" href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'addInTransaction','id'=>$this->control->getId()))?>">Add  In Transaction</a>
+	<a class="button-link btn-sm" href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'editRetestDate','id'=>$this->control->getId()))?>">Edit Control  </a>
 	
 	<?php
 	if($this->control->getBalance() >0 ){
 	foreach($this->allowedActions[$this->control->getStatus()] as $action)	 {?>
-		<a class="button-link" href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>$action['method'],'id'=>$this->control->getId()))?>">Move to <?=$action['label']?> </a>
+		<a class="button-link btn-sm" href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>$action['method'],'id'=>$this->control->getId()))?>">Move to <?=$action['label']?> </a>
 	
 	<?}
 	}?>
+	<a class="button-link btn-sm " href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'showProduct','id'=>$this->control->getCode()))?>">Back  </a>
+	
+</p>
 
 
-<div class="control">
- <label >Control Number:</label> <span class="clr" ><?= $this->control->getControlNumber()?></span><br/>
- <label >Product Code:</label> <span class="clr" ><?=$this->control->getCode()?></span>
- <label >Control Name:</label> <span class="clr" ><?=$this->control->getProductName()?></span>
- <br/>
-	 
- <label >Batch No. :</label> <span class="clr" ><?=$this->control->getBatchNo()?></span> 
- <label >Supplier/date :</label> <span class="clr" ><?=$this->control->getSupplier()?></span>
- <label >Unit :</label> <span class="clr" ><?=$this->control->getUnit()->getUnit()?></span>
- 
- <br/>
- <label >Exp.date :</label> <span class="clr" ><?=$this->control->getExpiryDate()->format('d/m/y')?></span> 
- <label >Retest date :</label> <span class="clr" ><?=$this->control->getRetestDate() ? $this->control->getRetestDate()->format('d/m/y'): ''?></span> 
- <label >Manufacturing  date :</label> <span class="clr" ><?=$this->control->getManufacturingDate() ? $this->control->getManufacturingDate()->format('d/m/y'):""?></span> 
- 
- <br/>
-  
- <label >Balance :</label> <span class="clr" ><?=$this->control->getBalance()?></span> 
- <label >Status :</label> <span class="clr" ><?=$this->control->getStatus()?></span> 
- 
- <br/>
- <label >Created By  :</label> <span class="clr" ><?=$this->control->getUser()->getUsername()?></span> 
- <label >Date Created  :</label> <span class="clr" ><?=$this->control->getDateCreated()->format('d/m/y')?></span> 
- 
-
-
+ <div class=" ">
+ <div class="col-xs-4"> <label >Control Number:</label> <span class="clr" ><?= $this->control->getControlNumber()?></span></div>
+ <div class="col-xs-4"><label >Product Code:</label> <span class="clr" ><?=$this->control->getCode()?></span></div>
+ <div class="col-xs-4"><label >Control Name:</label> <span class="clr" ><?=$this->control->getProductName()?></span></div>
 </div>
+<div class=" ">
+ <div class="col-xs-4"><label >Batch No. :</label> <span class="clr" ><?=$this->control->getBatchNo()?></span></div> 
+ <div class="col-xs-4"><label >Supplier/date :</label> <span class="clr" ><?=$this->control->getSupplier()?></span></div>
+ <div class="col-xs-4"><label >Unit :</label> <span class="clr" ><?=$this->control->getUnit()->getUnit()?></span></div>
+</div>
+<div class= >
+ <div class="col-xs-4"><label >Exp.date :</label> <span class="clr" ><?=$this->control->getExpiryDate()->format('d/m/y')?></span> </div>
+ <div class="col-xs-4"><label >Retest date :</label> <span class="clr" ><?=$this->control->getRetestDate() ? $this->control->getRetestDate()->format('d/m/y'): ''?></span> </div>
+ <div class="col-xs-4"><label >Manufacturing  date :</label> <span class="clr" ><?=$this->control->getManufacturingDate() ? $this->control->getManufacturingDate()->format('d/m/y'):""?></span></div> 
+ </div>
+<div class="  ">
+  
+ <div class="col-xs-4"><label >Balance :</label> <span class="clr" ><?=$this->control->getBalance()?></span> </div>
+ <div class="col-xs-4"><label >Status :</label> <span class="clr" ><?=$this->control->getStatus()?></span></div>
+ <div class="col-xs-4"><label >Location:</label> <span class="clr" ><?=$this->control->getLocation()?></span></div>
+  
+ </div>
+<div class=" ">
+ <div class="col-xs-4"><label >Created By  :</label> <span class="clr" ><?=$this->control->getUser()->getUsername()?></span> </div>
+ <div class="col-xs-4"><label >Date Created  :</label> <span class="clr" ><?=$this->control->getDateCreated()->format('d/m/y')?></span></div> 
+ </div>
+ 
 
-
-<table>
+<div class=" col-xs-12 ">
+ 
+<table class="table">
 
 <tr>
 	<th> In </th>
@@ -71,3 +82,6 @@
 </tr>
 <?php } ?>
 </table>
+
+ 
+</div> 

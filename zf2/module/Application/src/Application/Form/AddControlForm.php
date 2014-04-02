@@ -163,25 +163,26 @@ function buildEditControlDatesForm($em )
 		));
  
 		$form->add(array(
-			'type' => 'date',
+			'type' => 'Date',
 			'name' => 'retestDate',
-			'id' => 'retest_date',
-			'attributes'=>array("id"=>"retest_date"),			
+
+			'attributes'=>array("id"=>"retest_date"  ),			
 			'options' => array(
- 				'label' => 'Retest Date(m/d/Y)',
- 				'format' => 'm/d/Y'
+ 				'label' => 'Retest Date(d/m/Y)',
+ 				'format' => 'd/m/Y',
+
 
 			),
 		));
- 
+  
 		$form->add(array(
-			'type' => 'date',
+			'type' => 'Date',
 			'name' => 'expiryDate',
 			'id' => 'expiry_date',
 			'attributes'=>array("id"=>"expiry_date"),
 			'options' => array(
- 				'label' => 'expiryDate(m/d/Y)',
- 				'format' => 'm/d/Y'
+ 				'label' => 'expiryDate(d/m/Y)',
+ 				'format' => 'd/m/Y'
 
 			),
 		));
@@ -218,10 +219,115 @@ function buildEditControlDatesForm($em )
         return $form;
 	}
 
+	function buildCustomerControlsReportForm($em )
+	{
+		$form    = new Form("customerInventory");
+	
+		$form->setAttributes(array("class"=>"form-horizontal","role"=>"form"));
+		$form->add(array(
+				'type' => 'DoctrineModule\Form\Element\ObjectSelect',
+				'name' => 'customer',
+				'options' => array(
+						'id'=>'customer',
+						'object_manager' => $em,
+						'target_class'   => '\Application\Entity\Customer',
+						'property'       => 'id',
+						'label' => 'Filter  By Customer',
+						'label_generator' => function($targetEntity) {
+							return $targetEntity->getId() . ' - ' . $targetEntity->getName();
+						},
+		
+				),
+		));
+		$form->add(array(
+				'type' => 'DoctrineModule\Form\Element\ObjectSelect',
+				'name' => 'productType',
+				'options' => array(
+						'id' => 'product_type',
+						'display_empty_item' => true,
+						
+						'object_manager' => $em,
+						'target_class'   => '\Application\Entity\ProductType',
+						'property'       => 'id',
+						'label' => 'Filter By Product Type',
+						'label_generator' => function($targetEntity) {
+							return $targetEntity->getId() . ' - ' . $targetEntity->getName();
+						},
+		
+				),
+		));
+		
+ /*
+		$form->add(array(
+				'type' => 'text',
+				'name' => 'productName',
+				'id' => 'product_name',
+				'attributes'=>array("id"=>"product_name"),
+		
+				'options' => array(
+						'label' => 'productName',
+		
+				),
+		));
 
+		$form->add(array(
+				'type' => 'Zend\Form\Element\Checkbox',
+				'name' => 'showEmptyStock',
+				'id' => 'showEmptyStock',
+				'attributes'=>array("id"=>"showEmptyStock"),
+		
+				'options' => array(
+						'label' => 'showEmptyStock',
+		
+				),
+		));
+		
+				*/
+ 
 
+	
+		$form->add(array(
+				'name' => 'submit',
+				'attributes' => array(
+						'type' => 'submit',
+						'value' => 'Filter',
+						'id' => 'submitbutton',
+				),
+	
+		));
+	
+	
+	
+	
+	
+	
+		return $form;
+	}
+	
+	
+	function buildAddCustomerForm($em)
+	{
+		$builder = new AnnotationBuilder();
+		$form    = $builder->createForm('Application\Entity\Customer');
+	
+		$hydrator = new DoctrineHydrator($em);
+		$form->setHydrator($hydrator);
+		$form->add(array(
+				'name' => 'submit',
+				'attributes' => array(
+						'type' => 'submit',
+						'value' => 'Add Customer',
+						'id' => 'submitbutton',
+				),
+		));
+	
+	
+		return $form;
+	}
+	
+	
 
-
+	 
 
 }
  

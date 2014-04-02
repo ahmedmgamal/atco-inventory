@@ -61,9 +61,10 @@ return array(
 					'addTransaction' => 'member',
 					'addInTransaction' => 'member',
 					'addControl' => 'member',
-					
-					
-
+					'expiredControlsReport' => 'member',
+					'dailyTransactionsReport' => 'member',
+					'expiredControlsIn6MonthsReport' => 'member',
+					'customerControlsReport' => 'member',
 				), 
 				'CsnUser\Controller\Registration' => array(
 					'index'	=> 'guest',

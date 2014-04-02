@@ -5,11 +5,15 @@ namespace Application\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Zend\Form\Annotation;
 
+
 /**
  * Customer
  *
  * @ORM\Table(name="customer")
  * @ORM\Entity
+ * @Annotation\Name("Customer")
+ * @Annotation\Options({"label":"Customer"})
+
  */
 class Customer
 {
@@ -19,34 +23,40 @@ class Customer
      * @ORM\Column(name="id", type="integer", precision=0, scale=0, nullable=false, unique=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @Annotation\Exclude()
      */
     private $id;
 
     /**
      * @var string
-     *
+     * @Annotation\Filter({"name":"StringTrim"})
+     * @Annotation\Validator({"name":"StringLength", "options":{"min":1, "max":250}})
+     * @Annotation\Attributes({"type":"text","id":"name"})
+     * @Annotation\Options({"label":"New Customer Name"})
+     * @Annotation\Required(true)
      * @ORM\Column(name="name", type="string", length=45, precision=0, scale=0, nullable=false, unique=false)
+	 * @Annotation\Exclude()
      */
-    private $name;
+    public $name;
 
     /**
      * @var string
-     *
      * @ORM\Column(name="address", type="string", length=45, precision=0, scale=0, nullable=true, unique=false)
+     * @Annotation\Exclude()
      */
     private $address;
 
     /**
      * @var string
-     *
      * @ORM\Column(name="code", type="string", length=45, precision=0, scale=0, nullable=true, unique=false)
+     * @Annotation\Exclude()
      */
     private $code;
 
     /**
      * @var string
-     *
      * @ORM\Column(name="email", type="string", length=45, precision=0, scale=0, nullable=true, unique=false)
+     * @Annotation\Exclude()
      */
     private $email;
 

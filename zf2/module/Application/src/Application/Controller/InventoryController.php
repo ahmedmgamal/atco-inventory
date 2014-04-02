@@ -31,11 +31,29 @@ class InventoryController extends AbstractActionController
     }
     public function listCustomersAction()
     {
-        $em = $this->getServiceLocator()
-            ->get('doctrine.entitymanager.orm_default');
+
+    	$em = $this->getServiceLocator()->get('doctrine.entitymanager.orm_default');
+    	$addControlForm = new AddControlForm ();
+    	
+    	if ($this->getRequest()->isPost()) {
+    		$form = $addControlForm->buildAddCustomerForm($em);
+    		$customer = new \Application\Entity\Customer();
+    		$form->bind($customer);
+    		$form->setData($this->getRequest()->getPost());
+    		if($form->isValid()){
+    	
+    			$em->persist($customer);
+    			$em->flush();
+    		}
+    			
+    	}
+
 		$data = $em->getRepository('Application\Entity\Customer')->findAll();
-        
-        return new ViewModel(array('customers'=>$data));
+
+		$form = $addControlForm->buildAddCustomerForm($em);
+		
+		
+        return new ViewModel(array('customers'=>$data,'form'=>$form));
     }
 
  public function showCustomerAction()
@@ -78,6 +96,9 @@ class InventoryController extends AbstractActionController
 
 		$addControlForm = new AddControlForm ();
 		$form = $addControlForm->buildFilterForm($em);
+		if ($this->getRequest()->isPost()) {
+			$form->setData($this->getRequest()->getPost());
+		}
         return new ViewModel(array('customer'=>$data[0],'controls'=>$result,'filter_form'=>$form));
     }
   public function moveToReleasedAction()
@@ -139,14 +160,14 @@ class InventoryController extends AbstractActionController
 		$addControlForm = new AddControlForm ();
 		$form = $addControlForm->build($em);
 		$newControl = new Control();
-		
+		$newControl->setControlNumber("tmep".time());
 		if ($this->params()->fromQuery('controlId')){
 
 			
 				$control = $em->getRepository('Application\Entity\Control')->findById($this->params()->fromQuery('controlId'));
 			
 				$newControl->setCode($control[0]->getCode());
-				$newControl->setControlNumber("tmep".time());
+
 				$newControl->setProductName($control[0]->getProductName());
 				$newControl->setProductType($control[0]->getProductType());
 				
@@ -160,7 +181,20 @@ class InventoryController extends AbstractActionController
 
         $request = $this->getRequest();
 		if ($request->isPost()) {
-			$form->setData($request->getPost());
+			$postDate=$request->getPost();
+			foreach( array('retestDate','expiryDate','manufacturingDate') as $d ){
+				if(($request->getPost($d))){
+					$postDate[$d]=date_format(date_create_from_format('d/m/Y',$request->getPost($d)), 'Y-m-d');
+				}	
+						
+			}
+				
+			//echo date_format($postDate['expiryDate'], 'Y-m-d');
+				
+				//print_r($postDate);die();
+			$form->setData($postDate);
+				
+			
 				if ($form->isValid()) {
 				 	$customer = $em->getRepository('Application\Entity\Customer')->findById($this->params()->fromRoute('id'));
 
@@ -170,7 +204,6 @@ class InventoryController extends AbstractActionController
 
 					$newControl->setUser($this->identity());
 					$newControl->setDateCreated(new \DateTime());
-					
 					$em->persist($newControl);
 					$em->flush(); 
 
@@ -564,9 +597,10 @@ public function extractFinishControls($controlsChunk,$customerId,$productType)
 		if ($request->isPost()) {
 			$form->setData($request->getPost());
 			if ($form->isValid()) {
-				$control->setRetestDate(date_create_from_format('m/d/Y',$form->getData()->getRetestDate())) ;
+				 //print_r($control->getRetestDate());//die();
+				$control->setRetestDate(date_create_from_format('d/m/Y',$form->getData()->getRetestDate())) ;
 				
-				$control->setExpiryDate(date_create_from_format('m/d/Y',$form->getData()->getExpiryDate())) ;
+				$control->setExpiryDate(date_create_from_format('d/m/Y',$form->getData()->getExpiryDate())) ;
 				$em->flush();
 				$this->redirect()->toRoute('application/default',array('controller'=>'inventory','action'=>'showControl', 'id' => $this->params()->fromRoute('id')) );
 			
@@ -593,7 +627,12 @@ public function extractFinishControls($controlsChunk,$customerId,$productType)
 			$form->setData($request->getPost());
 				if ($form->isValid()) {
 				 	$control = $em->find('Application\Entity\Control',$this->params()->fromRoute('id'));
-				 	$control->setBalance($control->getBalance()-$newControlTransactions->getOut());
+				 	$newBalance = $control->getBalance()-$newControlTransactions->getOut();
+				 	if($newBalance<0){
+						$form->get('out')->setMessages(array('Insufficent ammmount '));				 		return new ViewModel(array('form'=>$form));
+				 			
+				 	}
+				 	$control->setBalance($newBalance);
 
  					$em->flush();
 
@@ -609,7 +648,7 @@ public function extractFinishControls($controlsChunk,$customerId,$productType)
 
 		}
         
-		return new ViewModel(array('form'=>$form));
+		return new ViewModel(array('form'=>$form,'controlId'=>$this->params()->fromRoute('id')));
 	}
 
 public function addInTransactionAction()
@@ -644,7 +683,7 @@ public function addInTransactionAction()
 
 		}
         
-		return new ViewModel(array('form'=>$form));
+		return new ViewModel(array('form'=>$form,'controlId'=>$this->params()->fromRoute('id')));
 	}
 
  public function sendDailyTransactionsReportAction()
@@ -658,7 +697,108 @@ public function addInTransactionAction()
 		$query->setParameter('date',$hours24Ago);
 		$transactions =  $query->getResult();
 
-		$style ='<style>table {
+		$table = $this->generateTransactionsTable($transactions );
+		$transport = $this->getServiceLocator()->get('mail.transport');
+		$title = "<h2>".'Atco inventory : Transactions log for '. date('l \t\h\e jS')."</h2> " ;
+		$messagContent = $title ."<hr />".$table ;
+		
+ 
+
+		$html = new MimePart($messagContent);
+		$html->type = "text/html";
+
+ 
+		$body = new MimeMessage();
+		$body->setParts(array( $html ));
+
+		$message = new Message();
+
+	 	$admins = $em->getRepository('CsnUser\Entity\User')->findBy(array('role'=>3));
+
+		$message->addTo('ahmed.gamal@ahmedgamal.info');
+		foreach($admins as $admin){
+				$message->addTo($admin->getEmail());
+			}
+
+
+		$message->addFrom('smpt@ahmedgamal.info')
+						->setSubject('Atco inventory : Transactions log for '. date('l \t\h\e jS'))
+						->setBody($body);
+		
+
+//		if(!$this->params()->fromQuery('viewOnly')==1){
+		$transport->send($message);
+	//	}
+
+		//echo "message sent ";
+		$viewModel = new ViewModel(array('table'=>$table));
+	//	$viewModel->setTemplate('application/inventory/send-daily-transactions-report');
+		
+	//	$renderer = $this->serviceLocator->get('Zend\View\Renderer\RendererInterface');
+	//	$htmlString = $renderer->render($viewModel);
+
+		
+		return $viewModel;
+
+     }
+	
+	public function dailyTransactionsReportAction()
+     {
+     	$em = $this->getServiceLocator()->get('doctrine.entitymanager.orm_default');
+     	//$t = new   Application\Entity\ControlTransaction ;
+     	$query = $em->createQuery("SELECT t,c FROM Application\Entity\ControlTransactions t  join t.control c  where t.dateCreated > :date");
+
+     	     	
+     	//$query->setParameter('date', new \DateTime('today'));
+     	$hours24Ago = new \DateTime('-24 hour');
+     	
+     	$query->setParameter('date',$hours24Ago);
+      	
+     	$transactions =  $query->getResult();
+     	$table = $this->generateTransactionsTable($transactions );
+     	
+     	//$viewModel = new ViewModel(array('table'=>$transactions));
+     	$viewModel = new ViewModel(array('table'=>$table));
+ 
+     	//	$viewModel->setTemplate('application/inventory/send-daily-transactions-report');
+     	
+     	//	$renderer = $this->serviceLocator->get('Zend\View\Renderer\RendererInterface');
+     	//	$htmlString = $renderer->render($viewModel);
+     	
+     	
+     	return $viewModel;
+     }
+public function expiredControlsReportAction()
+     {
+     	
+     	$em = $this->getServiceLocator()->get('doctrine.entitymanager.orm_default');
+     	$query = $em->createQuery("SELECT  c,customer,pt FROM Application\Entity\Control  c  join c.customer customer join c.productType pt where c.expiryDate < :date");
+     	$today = new \DateTime('today');
+     	$query->setParameter('date',$today);
+     	$controls =  $query->getResult();
+     	$viewModel = new ViewModel(array('controls'=>$controls));
+     	return $viewModel ;
+     }
+     public function expiredControlsIn6MonthsReportAction()
+     {
+     
+     	$em = $this->getServiceLocator()->get('doctrine.entitymanager.orm_default');
+     	$query = $em->createQuery("SELECT  c,customer,pt FROM Application\Entity\Control  c  join c.customer customer join c.productType pt where c.expiryDate > :todaydate and c.expiryDate < :after6months order by  c.expiryDate  ");
+     	$today = new \DateTime('today');
+     	
+     	$query->setParameter('todaydate',$today);
+     	$query->setParameter('after6months',new \DateTime('+6 Month'));
+     	$controls =  $query->getResult();
+     	$viewModel = new ViewModel(array('controls'=>$controls));
+     	return $viewModel ;
+     }
+     
+      
+      
+     public function generateTransactionsTable($transactions){
+     	
+     	
+     	$style ='<style>table {
     -moz-border-bottom-colors: none;
     -moz-border-left-colors: none;
     -moz-border-right-colors: none;
@@ -734,91 +874,84 @@ table a:hover {
 table a:active {
     color: #000000;
 }</style>';
-		
-		
-		$table = $style;
-		$table .=  "<table> ";
-		$table .=  "<tr> ";
-		$table .=  "<th> Control Number </th> ";
-		$table .=  "<th> Product Code</th> ";
-		$table .=  "<th> Product Name </th> ";
-		$table .=  "<th> In ammount </th> ";
-		$table .=  "<th> Out ammount </th> ";
-		$table .=  "<th> Balance </th> ";
-		$table .=  "<th> Description </th> ";
-		$table .=  "<th> Receipt No </th> ";
-		$table .=  "<th> User </th> ";
-		$table .=  "<th> Date Time </th> ";
-		
-		
-
-		$table .=  "</tr> ";
-		
-		foreach($transactions as $trans){ 
-			$table .=  "<tr> ";
-		
-			$table .=  "<td> ".$trans->getControl()->getControlNumber() ."</td>";
-			$table .=  "<td> ".$trans->getControl()->getCode() ."</td>";
-			$table .=  "<td> ".$trans->getControl()->getProductName() ."</td>";
-			$table .=  "<td> ".$trans->getIn() ."</td>";
-			$table .=  "<td> ".$trans->getOut() ."</td>";
-			$table .=  "<td> ".$trans->getBalance() ."</td>";
-			$table .=  "<td> ".$trans->getDescription() ."</td>";
-			$table .=  "<td> ".$trans->getReceiptNo() ."</td>";
-			$table .=  "<td> ".$trans->getUser()->getUsername()  ."</td>";
-			$table .=  "<td> ".$trans->getDateCreated()->format('d/m/Y H:i') ."</td>";
- 
-			
-		$table .=  "</tr> ";
-		}  
-		$table .=  "</table> ";
-        
-        
-
-		$transport = $this->getServiceLocator()->get('mail.transport');
-		$title = "<h2>".'Atco inventory : Transactions log for '. date('l \t\h\e jS')."</h2> " ;
-		$messagContent = $title ."<hr />".$table ;
-		
- 
-
-		$html = new MimePart($messagContent);
-		$html->type = "text/html";
-
- 
-		$body = new MimeMessage();
-		$body->setParts(array( $html ));
-
-		$message = new Message();
-
-	 	$admins = $em->getRepository('CsnUser\Entity\User')->findBy(array('role'=>3));
-
-		$message->addTo('ahmed.gamal@ahmedgamal.info');
-		foreach($admins as $admin){
-				$message->addTo($admin->getEmail());
-			}
-
-
-		$message->addFrom('smpt@ahmedgamal.info')
-						->setSubject('Atco inventory : Transactions log for '. date('l \t\h\e jS'))
-						->setBody($body);
-		
-
-//		if(!$this->params()->fromQuery('viewOnly')==1){
-		$transport->send($message);
-	//	}
-
-		//echo "message sent ";
-		$viewModel = new ViewModel(array('table'=>$table));
-	//	$viewModel->setTemplate('application/inventory/send-daily-transactions-report');
-		
-	//	$renderer = $this->serviceLocator->get('Zend\View\Renderer\RendererInterface');
-	//	$htmlString = $renderer->render($viewModel);
-
-		
-		return $viewModel;
-
+     	
+     	
+     	$table = $style;
+     	$table .=  "<table> ";
+     	$table .=  "<tr> ";
+     	$table .=  "<th> Control Number </th> ";
+     	$table .=  "<th> Product Code</th> ";
+     	$table .=  "<th> Product Name </th> ";
+     	$table .=  "<th> In ammount </th> ";
+     	$table .=  "<th> Out ammount </th> ";
+     	$table .=  "<th> Balance </th> ";
+     	$table .=  "<th> Description </th> ";
+     	$table .=  "<th> Receipt No </th> ";
+     	$table .=  "<th> User </th> ";
+     	$table .=  "<th> Date Time </th> ";
+     	
+     	
+     	
+     	$table .=  "</tr> ";
+     	
+     	foreach($transactions as $trans){
+     		$table .=  "<tr> ";
+     	
+     		$table .=  "<td> ".$trans->getControl()->getControlNumber() ."</td>";
+     		$table .=  "<td> ".$trans->getControl()->getCode() ."</td>";
+     		$table .=  "<td> ".$trans->getControl()->getProductName() ."</td>";
+     		$table .=  "<td> ".$trans->getIn() ."</td>";
+     		$table .=  "<td> ".$trans->getOut() ."</td>";
+     		$table .=  "<td> ".$trans->getBalance() ."</td>";
+     		$table .=  "<td> ".$trans->getDescription() ."</td>";
+     		$table .=  "<td> ".$trans->getReceiptNo() ."</td>";
+     		$table .=  "<td> ".$trans->getUser()->getUsername()  ."</td>";
+     		$table .=  "<td> ".$trans->getDateCreated()->format('d/m/Y H:i') ."</td>";
+     	
+     			
+     		$table .=  "</tr> ";
+     	}
+     	$table .=  "</table> ";
+     	
+     	
+     	return $table;
+     	
      }
+     public function customerControlsReportAction()
+     {
+     	$em = $this->getServiceLocator()->get('doctrine.entitymanager.orm_default');
+     
+     	$addControlForm = new AddControlForm ();
+     	$form = $addControlForm->buildCustomerControlsReportForm($em);
+     	$newControl = new Control();
+     
+     	$request = $this->getRequest();
+     	if ($request->isPost()) {
+     		$form->setData($request->getPost());
+     		 
+     			$filterData = array();
+     			$requestData =$request->getPost();
 
-
-
+     			if($requestData['customer'])		{ $filterData['customer'] =$requestData['customer'];}
+     	
+     			//if($requestData['showEmptyStock'])	{ $filterData['balance'] =" > 0.00";}
+     			$dql = "SELECT  c,customer,pt FROM Application\Entity\Control  c  join c.customer customer join c.productType pt where c.balance > 0 ";
+     			
+     			if($requestData['productType'])		{ $dql .= " and c.productType=".$requestData['productType'] ;}
+     			if($requestData['customer'])		{ $dql .= " and c.customer=".$requestData['customer'] ;}
+     	
+     			
+     			$query = $em->createQuery($dql);
+     			
+     	
+     		 
+       			$data = $query->getResult(); 
+       			//$em->getRepository('Application\Entity\Control')->findBy($filterData);
+       			
+     			return new ViewModel(array('controls'=>$data,'filter_form'=>$form  ));
+ 
+     	}
+     
+     	return new ViewModel(array('filter_form'=>$form));
+     }
 }

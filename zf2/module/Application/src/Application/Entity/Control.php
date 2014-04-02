@@ -29,22 +29,22 @@ class Control
     /**
      * @var string
      * @Annotation\Filter({"name":"StringTrim"})
-     * @Annotation\Validator({"name":"StringLength", "options":{"min":1, "max":25}})
+     * @Annotation\Validator({"name":"StringLength", "options":{"min":1, "max":250}})
      * @Annotation\Attributes({"type":"text","id":"controlNumber"})
      * @Annotation\Options({"label":"controlNumber"})
      * @Annotation\Required(true)
-     * @ORM\Column(name="control_number", type="string", length=45, precision=0, scale=0, nullable=false, unique=true)
+     * @ORM\Column(name="control_number", type="string", length=450, precision=0, scale=0, nullable=false, unique=true)
      */
     public $controlNumber;
 
     /**
      * @var string
      * @Annotation\Filter({"name":"StringTrim"})
-     * @Annotation\Validator({"name":"StringLength", "options":{"min":1, "max":25}})
+     * @Annotation\Validator({"name":"StringLength", "options":{"min":1, "max":250}})
      * @Annotation\Attributes({"type":"text","id":"code"})
      * @Annotation\Options({"label":"Code"})
      * @Annotation\Required(true)
-     * @ORM\Column(name="code", type="string", length=45, precision=0, scale=0, nullable=true, unique=false)
+     * @ORM\Column(name="code", type="string", length=450, precision=0, scale=0, nullable=true, unique=false)
      */
     public $code;
 
@@ -53,23 +53,23 @@ class Control
     /**
      * @var string
      * @Annotation\Filter({"name":"StringTrim"})
-     * @Annotation\Validator({"name":"StringLength", "options":{"min":1, "max":25}})
+     * @Annotation\Validator({"name":"StringLength", "options":{"min":1, "max":250}})
      * @Annotation\Attributes({"type":"text","id":"productName"})
      * @Annotation\Options({"label":"productName"})
      * @Annotation\Required(true)
-     * @ORM\Column(name="product_name", type="string", length=45, precision=0, scale=0, nullable=true, unique=false)
+     * @ORM\Column(name="product_name", type="string", length=450, precision=0, scale=0, nullable=true, unique=false)
      */
     public $productName;
 
     /**
      * @var string
      * @Annotation\Filter({"name":"StringTrim"})
-     * @Annotation\Validator({"name":"StringLength", "options":{"min":1, "max":25}})
+     * @Annotation\Validator({"name":"StringLength", "options":{"min":1, "max":250}})
      * @Annotation\Attributes({"type":"text","id":"batchNo"})
      * @Annotation\Options({"label":"batchNo"})
      * @Annotation\Required(true)
      * @ORM\Column(name="product_name", type="string", length=45, precision=0, scale=0, nullable=true, unique=false)
-     * @ORM\Column(name="batch_no", type="string", length=45, precision=0, scale=0, nullable=true, unique=false)
+     * @ORM\Column(name="batch_no", type="string", length=450, precision=0, scale=0, nullable=true, unique=false)
      */
     public $batchNo;
 
@@ -88,7 +88,7 @@ class Control
     /**
      * @var \DateTime
      * @Annotation\Attributes({"type":"Date","id":"expiry_date"})
-     * @Annotation\Options({"label":"expiry_date (m/d/y)"})
+     * @Annotation\Options({"label":"expiry_date (d/m/y)","format" : "d/m/Y"})
      * @Annotation\Required(true)
      * @ORM\Column(name="expiry_date", type="date", precision=0, scale=0, nullable=true, unique=false)
      */
@@ -97,7 +97,7 @@ class Control
     /**
      * @var string
      * @Annotation\Filter({"name":"StringTrim"})
-     * @Annotation\Validator({"name":"StringLength", "options":{"min":1, "max":25}})
+     * @Annotation\Validator({"name":"StringLength", "options":{"min":1, "max":250}})
      * @Annotation\Attributes({"type":"text","id":"supplier"})
      * @Annotation\Options({"label":"supplier"})
 
@@ -136,7 +136,7 @@ class Control
      * @var \DateTime
      * @ORM\Column(name="retest_date", type="date", precision=0, scale=0, nullable=true, unique=false)
      * @Annotation\Attributes({"type":"Date","id":"retest_date"})
-     * @Annotation\Options({"label":"Retest Date (m/d/y)"})
+     * @Annotation\Options({"label":"Retest Date (d/m/y)"})
      */
     public $retestDate;
 
@@ -144,7 +144,7 @@ class Control
      * @var \DateTime
      * @ORM\Column(name="manufacturing_date", type="date", precision=0, scale=0, nullable=true, unique=false)
      * @Annotation\Attributes({"type":"Date","id":"manufacturingDate"})
-     * @Annotation\Options({"label":"manufacturingDate (m/d/y)"})
+     * @Annotation\Options({"label":"manufacturingDate (d/m/y)"})
      */
     public $manufacturingDate;
 

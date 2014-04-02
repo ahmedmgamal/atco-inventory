@@ -1,0 +1,41 @@
+<h3>Customer Inventory Report</h3>
+	<a class="btn btn-primary btn-small" href="#">Add  New Control</a>
+
+
+ 
+<div>
+ <?php echo $this->form()->render($this->filter_form); ?>
+</div>
+
+<table>
+
+<tr>
+	<th> control number </th>
+	<th> Product Name </th>
+	<th> Product Type </th>
+	
+ 	<th> Expiry Date </th>
+	<th> Batch No </th>
+	<th> Balance </th>
+ 
+	
+	<th> Status </th>
+</tr>
+
+<?php echo count($this->controls);?>
+<?php foreach($this->controls as $control){
+ ?>
+<tr>
+  	<td> <?=$control->getControlNumber()?> </td>
+	<td> <?=$control->getProductName()?> </td>
+	<td> <?=$control->getProductType()->getName()?> </td>
+	<td> <?=$control->getExpiryDate()->format('d/m/Y');?> </td>
+	<td> <?=$control->getBatchNo() ?> </td>
+	
+	<td>  <?=$control->getInitialAmmount()?> </td>
+	<td> <?=$control->getBalance()?> </td>
+
+	<td> <?=$control->getStatus()?> </td>
+	</tr>
+<?php } ?>
+</table>

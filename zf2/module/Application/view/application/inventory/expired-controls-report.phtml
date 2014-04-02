@@ -1,15 +1,8 @@
-<h2><?=$this->controls[0]->getProductName()?>  Inventory  </h2>
+<h2>Expired Controls</h2>
 	
 
-<div>
-	<a class="button-link "  href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'addControl','id'=>$this->controls[0]->getCustomer()->getId()), array('query'=>array('controlId'=>$this->controls[0]->getId())))?>">Add  New Control to <?=$this->controls[0]->getProductName()?> </a>
-	
-	<a class="button-link "  href="<?=$this->url('application/default',array('controller'=>'Inventory','action'=>'showCustomer', 'id'=>$this->controls[0]->getCustomer()->getId()))?>">Back</a>
  
- 
-</div>
-<br/>
-
+<div class="table">
 <table>
 
 <tr>
@@ -18,11 +11,10 @@
 	<th> Product Type </th>
 	<th> Expiry Date </th>
 	<th> Batch No </th>
-	
+	<th> Customer </th>
 	
 	<th> Initial Ammount </th>
 	<th> Balance </th>
-
 	<th> Status </th>
 	
 </tr>
@@ -38,7 +30,7 @@
 	<td> <?=$control->getProductType()->getName()?> </td>
 	<td> <?=$control->getExpiryDate()->format('d/m/Y');?> </td>
 	<td> <?=$control->getBatchNo() ?> </td>
-	
+	<td>  <?=$control->getCustomer()->getName()?> </td>
 	<td>  <?=$control->getInitialAmmount()?> </td>
 	<td> <?=$control->getBalance()?> </td>
 
@@ -49,3 +41,5 @@
 </tr>
 <?php } ?>
 </table>
+
+</div>
