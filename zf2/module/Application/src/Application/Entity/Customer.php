@@ -35,7 +35,6 @@ class Customer
      * @Annotation\Options({"label":"New Customer Name"})
      * @Annotation\Required(true)
      * @ORM\Column(name="name", type="string", length=45, precision=0, scale=0, nullable=false, unique=false)
-	 * @Annotation\Exclude()
      */
     public $name;
 

@@ -772,7 +772,7 @@ public function expiredControlsReportAction()
      {
      	
      	$em = $this->getServiceLocator()->get('doctrine.entitymanager.orm_default');
-     	$query = $em->createQuery("SELECT  c,customer,pt FROM Application\Entity\Control  c  join c.customer customer join c.productType pt where c.expiryDate < :date");
+     	$query = $em->createQuery("SELECT  c,customer,pt FROM Application\Entity\Control  c  join c.customer customer join c.productType pt where c.balance>0.0 and  c.expiryDate < :date");
      	$today = new \DateTime('today');
      	$query->setParameter('date',$today);
      	$controls =  $query->getResult();
@@ -783,7 +783,7 @@ public function expiredControlsReportAction()
      {
      
      	$em = $this->getServiceLocator()->get('doctrine.entitymanager.orm_default');
-     	$query = $em->createQuery("SELECT  c,customer,pt FROM Application\Entity\Control  c  join c.customer customer join c.productType pt where c.expiryDate > :todaydate and c.expiryDate < :after6months order by  c.expiryDate  ");
+     	$query = $em->createQuery("SELECT  c,customer,pt FROM Application\Entity\Control  c  join c.customer customer join c.productType pt where c.balance>0.0 and  c.expiryDate > :todaydate and c.expiryDate < :after6months order by  c.expiryDate  ");
      	$today = new \DateTime('today');
      	
      	$query->setParameter('todaydate',$today);
