@@ -34,6 +34,7 @@ class InventoryController extends AbstractActionController
 
     	$em = $this->getServiceLocator()->get('doctrine.entitymanager.orm_default');
     	$addControlForm = new AddControlForm ();
+	    // test code
     	
     	if ($this->getRequest()->isPost()) {
     		$form = $addControlForm->buildAddCustomerForm($em);
